@@ -20,6 +20,8 @@
    PICTURE: the stage card coloured by category with the big timer chip, the player chips around it
    COLOUR and TYPE: cream table, flat blocks of orange, red, purple, brown; Archivo Black + Archivo
    LAYOUT: market strip on top, stage card + chip grid side by side; stacks on phones */
+@font-face{font-family:'Familjen Grotesk';src:url(./fonts/familjen-grotesk-latin-700-normal.woff2) format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Familjen Grotesk';src:url(./fonts/familjen-grotesk-latin-400-italic.woff2) format('woff2');font-weight:400;font-style:italic;font-display:swap}
 @font-face{font-family:'Archivo Black';src:url(./fonts/archivo-black-latin-400-normal.woff2) format('woff2');font-weight:400;font-display:swap}
 @font-face{font-family:'Archivo';src:url(./fonts/archivo-latin-500-normal.woff2) format('woff2');font-weight:500;font-display:swap}
 @font-face{font-family:'Archivo';src:url(./fonts/archivo-latin-600-normal.woff2) format('woff2');font-weight:600;font-display:swap}
@@ -75,6 +77,9 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;fl
 .vb{min-height:72px;border-radius:20px;color:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;font-size:20px}
 .vb small{font-family:'Archivo';font-weight:700;font-size:13px;opacity:.9}
 .lnk{font-weight:700;text-decoration:underline;min-height:44px;color:var(--mut)}
+.addp{min-height:52px;border-radius:16px;border:2px dashed var(--dk);font-weight:700;font-size:15px;width:100%}.addp:hover{background:var(--sand)}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.rc{border-radius:24px;padding:16px 18px;background:var(--c);color:var(--k);display:flex;flex-direction:column;gap:6px}.rc h3{margin:0;font-size:20px;line-height:1.1}.rc p,.rc li{margin:0;font-size:15px;font-weight:600;line-height:1.4}.rc ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px}.rc b{font-weight:700}
+.ask{border-radius:28px;box-shadow:0 0 0 3px var(--dk);padding:20px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;background:#fff}.ask h2{margin:0;font-size:clamp(24px,5vw,34px);line-height:1.05}.ask .two{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:420px}
 .inst{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--pu);color:var(--bg);border-radius:18px;padding:10px 14px;font-weight:700;font-size:14px}.inst button{background:var(--or);color:var(--dk);border-radius:12px;min-height:44px;padding:0 14px;font-weight:700}
 .hint{font-size:13px;color:var(--mut);font-weight:600;margin:0}
 .big{min-height:60px;border-radius:18px;font-size:18px;letter-spacing:.06em;width:100%}
@@ -106,12 +111,39 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;fl
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="wolf" viewBox="0 0 200 250"><path d="M52 10 L82 52 L100 46 L118 52 L148 10 L160 70 L154 100 L176 118 L156 124 L168 140 L144 142 L120 176 L100 194 L80 176 L56 142 L32 140 L44 124 L24 118 L46 100 L40 70 Z" fill="#2A110D"/><path d="M58 28 L78 56 L62 64Z M142 28 L122 56 L138 64Z" fill="#D95536"/><path d="M62 96 L90 104 L84 111 L68 106Z M138 96 L110 104 L116 111 L132 106Z" fill="#E59F48"/><path d="M100 60 L114 150 L100 172 L86 150Z" fill="#FBF9F4"/><path d="M91 150 L109 150 L100 161Z" fill="#2A110D"/><path d="M68 186 L96 198 L92 208 L74 216Z M132 186 L104 198 L108 208 L126 216Z" fill="#2A110D"/><path d="M93 197 L107 197 L113 234 L100 248 L87 234Z" fill="#D95536"/></symbol>
-<symbol id="chip" viewBox="0 0 200 200"><circle cx="100" cy="100" r="98" fill="#D95536"/><circle cx="100" cy="100" r="86" fill="none" stroke="#2A110D" stroke-width="24" stroke-dasharray="20 47.5"/><circle cx="100" cy="100" r="72" fill="#E59F48" stroke="#D95536" stroke-width="3"/><use href="#wolfhead" x="48" y="38" width="104" height="104"/></symbol>
-<symbol id="wolfhead" viewBox="20 6 160 192"><path d="M52 10 L82 52 L100 46 L118 52 L148 10 L160 70 L154 100 L176 118 L156 124 L168 140 L144 142 L120 176 L100 194 L80 176 L56 142 L32 140 L44 124 L24 118 L46 100 L40 70 Z" fill="#2A110D"/><path d="M58 28 L78 56 L62 64Z M142 28 L122 56 L138 64Z" fill="#D95536"/><path d="M62 96 L90 104 L84 111 L68 106Z M138 96 L110 104 L116 111 L132 106Z" fill="#E59F48"/><path d="M100 60 L114 150 L100 172 L86 150Z" fill="#FBF9F4"/><path d="M91 150 L109 150 L100 161Z" fill="#2A110D"/></symbol></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><g id="wolfart">
+      <g>
+        <path fill="#2b0e0c" d="M143.06,276.8l-36.39-39.42-27.29-33.36-21.23-36.39-9.1-45.48,15.17-84.91,48.52,57.62,30.32-9.1,30.33,9.1q25.72-28.78,51.44-57.55,6.12,42.42,12.24,84.84l-9.1,45.48-21.23,36.39-27.29,33.36L143.06,276.8Z"/>
+        <path fill="#e84928" d="M70.28,61.5l30.33,36.39-24.26,18.19L70.28,61.5Z"/>
+        <path fill="#e84928" d="M215.84,61.5l-30.33,36.39,24.26,18.19L215.84,61.5Z"/>
+        <path fill="#2b0e0c" d="M58.15,167.63l-21.23,18.2,33.36,3.03-24.26,24.26,39.42-3.03L58.15,167.63Z"/>
+        <path fill="#2b0e0c" d="M227.97,167.63l21.23,18.2-33.36,3.03,24.26,24.26-39.42-3.03L227.97,167.63Z"/>
+        <path fill="#fefbf8" d="M143.06,119.12l-18.19,45.48-9.1,69.75,27.29,33.36,27.29-33.36-9.09-69.75L143.06,119.12Z"/>
+        <path fill="#ea950e" d="M85.44,152.47l36.39,6.07-21.22,12.13L85.44,152.47Z"/>
+        <path fill="#ea950e" d="M200.68,152.47l-36.39,6.07,21.22,12.13L200.68,152.47Z"/>
+        <path fill="#2b0e0c" d="M127.9,234.35h30.32l-15.16,18.19L127.9,234.35Z"/>
+        <path fill="#e84928" d="M130.2,280.47h24.26l-3.04,18.19h-18.19L130.2,280.47Z"/>
+        <path fill="#e84928" d="M133.23,298.66h18.19l12.13,54.59-21.22,24.26-21.23-24.26L133.23,298.66Z"/>
+        <path fill="#2b0e0c" d="M99.87,268.34l30.33,12.13,3.03,18.19-21.23,9.1L99.87,268.34Z"/>
+        <path fill="#2b0e0c" d="M184.78,268.34l-30.32,12.13-3.04,18.19,21.23,9.1L184.78,268.34Z"/>
+      </g></defs><symbol id="wolf" viewBox="30 30 226 352"><use href="#wolfart"/></symbol><symbol id="wolfhead" viewBox="30 30 226 252"><use href="#wolfart"/></symbol><symbol id="logo" viewBox="30 30 760 352"><use href="#wolfart"/><g>
+    <g>
+      <path fill="#2b0e0c" d="M343.2,123.02h2.64l12.3-71.16h30.53l12.4,71.16h2.64l10.1-71.16h16.92v.65l-12.41,85.01h-31.85l-12.3-71.17h-2.64l-12.3,71.17h-31.84l-12.41-85.01v-.65h18.01"/>
+      <path fill="#2b0e0c" d="M437.09,94.69c0-27.13,13.29-44.37,40.64-44.37s40.63,17.24,40.63,44.37-13.18,44.36-40.63,44.36S437.09,121.81,437.09,94.69ZM499.25,94.69c0-19.55-6.7-30.53-21.52-30.53s-21.53,10.98-21.53,30.53,6.7,30.53,21.53,30.53S499.25,114.23,499.25,94.69Z"/>
+      <path fill="#2b0e0c" d="M530,137.52V51.86h18.45v71.16h35.8v14.5H530Z"/>
+      <path fill="#2b0e0c" d="M595.89,137.52V51.86h56.44v14.49h-38.21v19.44h28.99v13.4h-28.99v38.33H595.89Z"/>
+    </g>
+    <polygon fill="#2b0e0c" points="310.71 218.12 292.75 218.12 284.34 160.5 284.34 159.84 302.35 159.84 310.71 218.12"/>
+    <g>
+      <path fill="#2b0e0c" d="M385.62,159.8l-10.1,71.17h-2.64l-12.41-71.17h-30.53l-10.74,62.15-3.87,23.51h15.71l12.3-71.16h2.63l12.3,71.16h31.85l12.41-85v-.66H385.62Z"/>
+      <path fill="#2b0e0c" d="M449.53,158.26c-27.34,0-40.63,17.25-40.63,44.37s13.29,44.37,40.63,44.37,40.63-17.24,40.63-44.37S476.98,158.26,449.53,158.26ZM449.53,233.16c-14.82,0-21.52-10.98-21.52-30.53s6.7-30.53,21.52-30.53,21.52,10.98,21.52,30.53S464.36,233.16,449.53,233.16Z"/>
+      <path fill="#2b0e0c" d="M552.43,206.58c11.09-3.29,16.91-11.64,16.91-22.51,0-14.16-9.33-24.27-31.19-24.27h-36.35v85.66h18.23v-36.24h14.61l17.46,36.24h19.55v-.66L552.43,206.58ZM535.52,195.82h-15.49v-22.18h15.49c9.33,0,15.15,2.64,15.15,11.09S545.07,195.82,535.52,195.82Z"/>
+      <path fill="#2b0e0c" d="M621.94,199.12l29.66-38.66v-.66h-20.43l-24.6,32.95h-6.59v-32.95h-18.01v85.66h18.01v-38.22h6.59l27.89,38.22h21.97v-.66L621.94,199.12Z"/>
+    </g>
+    </g><text transform="translate(651.15 134.84)" fill="#2b0e0c" font-family="'Familjen Grotesk',sans-serif" font-style="italic" font-weight="400" font-size="73.88"><tspan letter-spacing="-.02em">o</tspan>f</text><text transform="translate(349.51 353.31)" fill="#e84928" font-family="'Familjen Grotesk',sans-serif" font-weight="700" font-size="131.78" textLength="440" lengthAdjust="spacingAndGlyphs">STREET</text></symbol><symbol id="chip" viewBox="0 0 200 200"><circle cx="100" cy="100" r="98" fill="#D95536"/><circle cx="100" cy="100" r="86" fill="none" stroke="#2A110D" stroke-width="24" stroke-dasharray="20 47.5"/><circle cx="100" cy="100" r="72" fill="#E59F48" stroke="#D95536" stroke-width="3"/><use href="#wolfhead" x="44" y="40" width="112" height="124"/></symbol></svg>
 <div class="wrap">
 <header>
- <div class="brand"><svg width="44" height="54" aria-hidden="true"><use href="#wolf"/></svg><span class="blk wt">WOLF <i>of</i><br>WORK<br><em>STREET</em></span></div>
+ <div class="brand" id="brand"><svg width="118" height="55" role="img" aria-label="Wolf of Work Street"><use href="#logo"/></svg></div>
  <div class="stats" id="pills"></div>
 </header>
 <main id="app"></main>
@@ -170,7 +202,7 @@ const round=()=>S.players.length?Math.floor(S.turn/S.players.length)+1:1;
 const maxT=()=>S.mods.short?30:S.sec;
 
 function pills(){
- if(S.phase==='setup'){$('pills').innerHTML='';return}
+ if(S.phase==='setup'||S.phase==='rules'){$('pills').innerHTML='';return}
  const idx=S.players.reduce((s,p)=>s+p.v,0),start=S.players.length*10,ch=start?((idx-start)/start*100):0,left=Math.round((S.gameEnd-Date.now())/1000);
  $('pills').innerHTML=`<div class="st s-or"><small>WOWS INDEX</small><b class="blk">${idx} <span style="font-size:13px">${ch>=0?'▲':'▼'}${Math.abs(ch).toFixed(0)}%</span></b></div>
  <div class="st ${left>0?'s-dk':'s-red'}" id="gclock"><small>${left>0?'BELL IN':'TIME IS UP'}</small><b class="blk">${left>0?fmt(left):'BELL!'}</b></div>
@@ -180,14 +212,32 @@ function pills(){
 
 function setup(){
  return `<section class="setup" style="display:flex;flex-direction:column;gap:16px">
- <div class="hero"><svg width="110" height="137" aria-hidden="true"><use href="#wolf"/></svg><h1 class="blk">WOLF <i>of</i><br>WORK<br><em>STREET</em></h1></div>
+ <div class="hero"><svg viewBox="0 0 760 352" style="width:min(420px,88%);height:auto" role="img" aria-label="Wolf of Work Street"><use href="#logo"/></svg></div>
  <p class="hint" style="text-align:center">The live trading screen for your board game. Put the phone in the middle of the table.</p>
  ${installBox()}
- <div class="row2"><span class="blk" style="font-size:20px">Players · ${S.names.length}</span><button class="sm" data-a="add">+ Add a player</button></div>
+ <span class="blk" style="font-size:20px">Players · ${S.names.length}</span>
  <div class="pl" id="names">${S.names.map((n,i)=>{const c=COLS[i%6];return`<div class="pr" style="--c:${c[0]};--k:${c[1]}"><input type="text" value="${esc(n)}" maxlength="14" data-n="${i}" placeholder="Name" aria-label="Player ${i+1} name"><button class="x" data-a="rm" data-i="${i}" aria-label="Remove player" ${S.names.length<=4?'disabled':''}>×</button></div>`}).join('')}</div>
+ <button class="addp" data-a="add">+ Add a player</button>
  <div class="row2" style="background:var(--sand);border-radius:18px;padding:10px 14px"><span style="font-weight:700">Game bell</span><div class="step"><button class="sm" data-a="gm" data-d="-5" aria-label="5 minutes less">−</button><b class="blk">${S.gameMin}</b><span style="font-weight:700">min</span><button class="sm" data-a="gm" data-d="5" aria-label="5 minutes more">+</button></div></div>
  <p class="hint">Minimum 4 players, no maximum. Everyone starts at stock value 10. Soft Coins, bets and cards stay on the table.</p>
  <button class="big blk" style="background:var(--red);color:var(--bg)" data-a="start">OPEN THE MARKET</button></section>`;
+}
+
+function rulesScreen(){
+ const n=S.names.map(x=>x.trim()).filter(Boolean);
+ const card=(c,k,t,b)=>`<div class="rc" style="--c:${c};--k:${k}"><h3 class="blk">${t}</h3>${b}</div>`;
+ return `<section style="display:flex;flex-direction:column;gap:16px;max-width:1000px;margin:0 auto;width:100%">
+ <div style="display:flex;align-items:center;gap:14px"><svg width="58" height="90" aria-hidden="true" style="flex:none"><use href="#wolf"/></svg><div><span class="hint">${n.length} players · ${S.gameMin} minutes · level B2</span><h1 class="blk" style="margin:0;font-size:clamp(30px,6vw,48px);line-height:1">How to play</h1></div></div>
+ <div class="rules">
+ ${card('#E59F48','#2A110D','The goal','<p>Be the <b>richest player</b> at the end. You earn money by performing well yourself, and by betting well on the others.</p><p><b>Fortune = Soft Coins + (stock value × 2)</b></p>')}
+ ${card('#523A85','#FBF9F4','Setup','<p>Each player takes <b>10 Soft Coins</b>. Every stock starts at <b>10</b>. The player who arrived earliest this morning starts: that\'s Punctuality!</p>')}
+ ${card('#2A110D','#FBF9F4','A trading day','<ol><li><b>Opening Bell:</b> the Performer picks a category and a risk. Low: +1 / −1. High: +3 / −2.</li><li><b>Trading:</b> the others bet BUY or SELL, face down, with 1 to 3 coins.</li><li><b>Performance:</b> start the timer in the app.</li><li><b>Verdict:</b> the table says Success or Fail and justifies it. A tie means success.</li><li><b>Settlement:</b> press the verdict in the app. Good bets pay double, bad bets go to the bank.</li></ol>')}
+ ${card('#D95536','#FBF9F4','Special cards','<p><b>Appeal</b> (once per game): contest a verdict with a 20-second plea, then the table votes again.</p><p><b>Bonus &amp; malus</b> like Short Clock, Safety Net or Double Up: tap them in the app when they are played.</p>')}
+ ${card('#A892E0','#2A110D','Market News','<p>After each full round of the table, the app draws a <b>market event</b>: a scandal, a crash, an insider tip… Its effect is applied automatically.</p>')}
+ ${card('#F1E8DA','#2A110D','End of the game','<p>The game ends when the <b>bell rings</b> or when a player has <b>no coins left</b>. Count your coins, the app finds the <b>Wolf of Work Street</b>.</p>')}
+ </div>
+ <div class="ask"><h2 class="blk">Do you want to start a game?</h2><div class="two"><button class="big blk" style="background:var(--sand)" data-a="no">NO</button><button class="big blk" style="background:var(--red);color:var(--bg)" data-a="yes">YES</button></div></div>
+ </section>`;
 }
 
 function spark(j){
@@ -232,7 +282,9 @@ function endScreen(){
 
 function render(){
  pills();const a=$('app');
+ $('brand').style.display=(S.phase==='setup'||S.phase==='rules')?'none':'flex';
  if(S.phase==='setup')a.innerHTML=setup();
+ else if(S.phase==='rules')a.innerHTML=rulesScreen();
  else if(S.phase==='end')a.innerHTML=endScreen();
  else{a.innerHTML=`<div class="main"><div id="stageCol">${stage()}</div>${market()}</div>`;drawChart()}
  save();
@@ -273,9 +325,11 @@ document.addEventListener('click',e=>{
  if(a==='add'){S.names.push('');render();const ins=document.querySelectorAll('#names input');ins[ins.length-1].focus();return}
  if(a==='rm')S.names.splice(i,1);
  if(a==='gm')S.gameMin=Math.max(10,Math.min(120,S.gameMin+ +b.dataset.d));
- if(a==='start'){const names=S.names.map(n=>n.trim()).filter(Boolean);if(names.length<4){alertBox('You need at least 4 players.');return}
+ if(a==='start'){const names=S.names.map(n=>n.trim()).filter(Boolean);if(names.length<4){alertBox('You need at least 4 players.');return}S.phase='rules';render();scrollTo(0,0);return}
+ if(a==='no'){S.phase='setup';render();scrollTo(0,0);return}
+ if(a==='yes'){const names=S.names.map(n=>n.trim()).filter(Boolean);
   const used={};S.players=names.map((n,j)=>{let tk=n.replace(/[^A-Za-z]/g,'').slice(0,3).toUpperCase()||'P'+(j+1);while(used[tk])tk=tk.slice(0,2)+(j+1);used[tk]=1;return{name:n,tk,v:10,c:COLS[j%6][0],k:COLS[j%6][1]}});
-  Object.assign(S,{phase:'play',hist:[],turn:0,cur:0,cat:0,risk:'L',sec:45,stage:'pick',coins:{},gameEnd:Date.now()+S.gameMin*60000,mods:{short:false,safety:false,dbl:false}});snap('start');resetTimer()}
+  Object.assign(S,{phase:'play',hist:[],turn:0,cur:0,cat:0,risk:'L',sec:45,stage:'pick',coins:{},gameEnd:Date.now()+S.gameMin*60000,mods:{short:false,safety:false,dbl:false}});snap('start');resetTimer();scrollTo(0,0)}
  if(a==='pick'&&S.stage!=='done'){S.cur=i;resetTimer();window.innerWidth<960&&window.scrollTo({top:0,behavior:'smooth'})}
  if(a==='cat')S.cat=i;
  if(a==='risk'){S.risk=b.dataset.r;S.sec=S.risk==='H'?60:45;resetTimer()}
@@ -309,9 +363,9 @@ function drawNews(){
 }
 function alertBox(msg){$('modal').innerHTML=`<div class="modal" role="alertdialog" aria-modal="true"><div class="card news pop" style="--cc:#D95536;--ck:#FBF9F4"><div class="ctop"><h3 class="blk">Wait!</h3></div><div class="cbody"><p>${esc(msg)}</p><button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="alertok">OK</button></div></div></div>`}
 let bellRung=false;
-setInterval(()=>{if(S.phase==='setup')return;const g=$('gclock');if(!g)return;const left=Math.round((S.gameEnd-Date.now())/1000);
+setInterval(()=>{if(S.phase!=='play'&&S.phase!=='end')return;const g=$('gclock');if(!g)return;const left=Math.round((S.gameEnd-Date.now())/1000);
  if(left<=0){if(!bellRung){bellRung=true;beep(392,.4);setTimeout(()=>beep(392,.6),450);pills()}}else g.querySelector('b').textContent=fmt(left)},1000);
-if(S.phase!=='setup')resetTimer();
+if(S.phase==='play')resetTimer();
 render();
 }
 </script>
