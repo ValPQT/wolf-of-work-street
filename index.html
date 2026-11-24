@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wolf of Work Street</title>
+<meta name="theme-color" content="#2A110D">
+<meta name="description" content="Digital add-on for the Wolf of Work Street board game: live stock market, timer and Market News.">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WoWS">
+<link rel="preload" href="./fonts/archivo-black-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* VOICE: clean and colourful, a casino table seen from above
+   IDEA: every player is a poker chip / card on the felt, the stage is the challenge card itself
+   PICTURE: the stage card coloured by category with the big timer chip, the player chips around it
+   COLOUR and TYPE: cream table, flat blocks of orange, red, purple, brown; Archivo Black + Archivo
+   LAYOUT: market strip on top, stage card + chip grid side by side; stacks on phones */
+@font-face{font-family:'Archivo Black';src:url(./fonts/archivo-black-latin-400-normal.woff2) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Archivo';src:url(./fonts/archivo-latin-500-normal.woff2) format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Archivo';src:url(./fonts/archivo-latin-600-normal.woff2) format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Archivo';src:url(./fonts/archivo-latin-700-normal.woff2) format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Archivo';src:url(./fonts/archivo-latin-700-italic.woff2) format('woff2');font-weight:700;font-style:italic;font-display:swap}
+:root{color-scheme:light;--bg:#FBF9F4;--dk:#2A110D;--or:#E59F48;--red:#D95536;--pu:#523A85;--lav:#A892E0;--coral:#F07A5C;--sand:#F1E8DA;--mut:#7A6158}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--dk);font:16px/1.45 'Archivo',system-ui,sans-serif;overflow-x:clip}
+button{font:inherit;cursor:pointer;color:inherit;border:0;background:none}
+button:focus-visible,input:focus-visible{outline:3px solid var(--pu);outline-offset:3px}
+.blk{font-family:'Archivo Black','Archivo',sans-serif;font-weight:400}
+.wrap{max-width:1240px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) max(3vw,14px,env(safe-area-inset-right)) max(32px,env(safe-area-inset-bottom)) max(3vw,14px,env(safe-area-inset-left));display:flex;flex-direction:column;gap:18px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:8px;line-height:.92;font-size:19px}
+.brand i{font-family:'Archivo';font-weight:700;font-size:.65em}.brand em{font-style:normal;color:var(--red)}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.st{border-radius:16px;padding:8px 14px;display:flex;flex-direction:column;line-height:1.1;min-width:84px}
+.st small{font-weight:700;font-size:11px;opacity:.85}.st b{font-size:22px}
+.s-or{background:var(--or)}.s-dk{background:var(--dk);color:var(--bg)}.s-pu{background:var(--pu);color:var(--bg)}.s-red{background:var(--red);color:var(--bg)}
+.endb{border:2px solid var(--dk);border-radius:16px;padding:0 16px;min-height:52px;font-weight:700}
+.main{display:grid;grid-template-columns:420px minmax(0,1fr);gap:18px;align-items:start}
+.market{background:var(--pu);color:var(--bg);border-radius:28px;padding:16px 18px 10px}
+.fig{position:relative;height:190px}.fig svg{position:absolute;inset:0;width:100%;height:100%}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:18px}
+.tile{position:relative;border-radius:24px;padding:14px;min-height:132px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;background:var(--c);color:var(--k);transition:transform .15s}
+.tile.on{outline:4px solid var(--dk);outline-offset:3px}
+.tile .nm{font-weight:700;font-size:16px}.tile .tk{font-size:12px;font-weight:700;opacity:.8}
+.tile .v{font-size:44px;line-height:.9}.tile .d{font-size:13px}
+.tile .rank{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;border:2px dashed currentColor;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tile .badge{position:absolute;top:-10px;left:14px;background:var(--dk);color:var(--bg);border-radius:999px;padding:3px 10px;font-size:10px;letter-spacing:.08em}
+.card{border-radius:28px;overflow:hidden;background:#fff;box-shadow:0 0 0 3px var(--dk)}
+.ctop{background:var(--cc);color:var(--ck);padding:18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.who{font-size:30px;line-height:1.02;margin:2px 0}
+.ctop .sub{font-weight:700;font-size:14px;opacity:.85}
+.ring{position:relative;width:118px;height:118px;flex:none}
+.ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px}
+.cbody{padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px}
+.tokens{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.tok{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;font-weight:700;text-align:center;line-height:1.1;min-height:44px}
+.tok i{width:44px;height:44px;border-radius:50%;background:var(--c);border:4px dashed rgba(251,249,244,.75);box-shadow:0 0 0 2px var(--c);transition:transform .15s}
+.tok[aria-pressed=true] i{transform:scale(1.12);box-shadow:0 0 0 2px var(--c),0 0 0 5px var(--dk)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--sand);border-radius:16px;padding:4px;gap:4px}
+.seg button{min-height:46px;border-radius:12px;font-weight:700;font-size:15px}
+.seg button[aria-pressed=true]{background:var(--dk);color:var(--bg)}
+.mods{display:flex;gap:6px;flex-wrap:wrap}
+.mod{min-height:40px;padding:0 12px;border-radius:999px;border:2px solid var(--pu);color:var(--pu);font-weight:700;font-size:13px}
+.mod[aria-pressed=true]{background:var(--pu);color:var(--bg)}
+.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.go{flex:1;min-height:52px;border-radius:16px;background:var(--dk);color:var(--bg);font-size:16px;letter-spacing:.06em}
+.sm{min-height:44px;min-width:44px;padding:0 10px;border-radius:12px;background:var(--sand);font-weight:700;font-size:14px}
+.sm[aria-pressed=true]{background:var(--or)}
+.verd{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vb{min-height:72px;border-radius:20px;color:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;font-size:20px}
+.vb small{font-family:'Archivo';font-weight:700;font-size:13px;opacity:.9}
+.lnk{font-weight:700;text-decoration:underline;min-height:44px;color:var(--mut)}
+.inst{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--pu);color:var(--bg);border-radius:18px;padding:10px 14px;font-weight:700;font-size:14px}.inst button{background:var(--or);color:var(--dk);border-radius:12px;min-height:44px;padding:0 14px;font-weight:700}
+.hint{font-size:13px;color:var(--mut);font-weight:600;margin:0}
+.big{min-height:60px;border-radius:18px;font-size:18px;letter-spacing:.06em;width:100%}
+.modal{position:fixed;inset:0;background:rgba(42,17,13,.7);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}
+.news{max-width:420px;width:100%}.news .ctop{flex-direction:column;align-items:flex-start;gap:4px;padding:22px}
+.news h3{margin:0;font-size:32px;line-height:1.02}.news p{margin:0;font-size:17px;font-weight:600}
+.eff{background:var(--sand);border-radius:14px;padding:12px;font-weight:700}
+.setup{max-width:620px;margin:0 auto;width:100%}
+.hero{display:flex;align-items:center;gap:18px;justify-content:center;padding:8px 0}
+.hero h1{margin:0;font-size:clamp(34px,8vw,56px);line-height:.92}.hero h1 i{font-family:'Archivo';font-weight:700;font-size:.45em}.hero h1 em{font-style:normal;color:var(--red)}
+.pl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pr{display:flex;align-items:center;gap:6px;background:var(--c);color:var(--k);border-radius:16px;padding:6px}
+.pr input{background:transparent;color:inherit;border:0;font:inherit;font-size:16px;font-weight:700;min-height:40px;padding:0 6px;width:100%}
+.pr input::placeholder{color:inherit;opacity:.6}
+.x{width:40px;height:40px;flex:none;border-radius:12px;background:rgba(42,17,13,.15);font-size:20px}
+.row2{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:6px}.step b{min-width:48px;text-align:center;font-size:20px}
+.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:end}
+.pod{border-radius:22px 22px 8px 8px;background:var(--c);color:var(--k);padding:12px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;gap:2px}
+.pod b{font-size:clamp(24px,5vw,38px);line-height:1}.pod span{font-weight:700}
+.coins{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.cn{border-radius:18px;padding:10px 12px;background:var(--sand);display:flex;align-items:center;gap:8px}
+.cn .nm{flex:1;font-weight:700;display:flex;flex-direction:column;line-height:1.15}.cn .nm small{font-weight:600;color:var(--mut)}
+.cn input{width:72px;min-height:44px;border-radius:12px;border:2px solid var(--dk);font:inherit;font-size:16px;text-align:center;background:#fff}
+.cn .f{font-size:22px;min-width:40px;text-align:right}
+@media(max-width:960px){.main{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:520px){.brand .wt{display:none}.st{min-width:0;padding:6px 10px}.st b{font-size:18px}.endb{min-height:44px;padding:0 12px}.stats{gap:6px}.who{font-size:24px}.ring{width:96px;height:96px}.pl{grid-template-columns:minmax(0,1fr)}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tile .v{font-size:36px}.fig{height:150px}.ring span{font-size:22px}.go{flex-basis:100%}}
+@media(prefers-reduced-motion:no-preference){.pop{animation:pop .35s ease-out}@keyframes pop{from{transform:translateY(8px) scale(.96);opacity:0}}.tile:hover{transform:translateY(-3px)}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="wolf" viewBox="0 0 200 250"><path d="M52 10 L82 52 L100 46 L118 52 L148 10 L160 70 L154 100 L176 118 L156 124 L168 140 L144 142 L120 176 L100 194 L80 176 L56 142 L32 140 L44 124 L24 118 L46 100 L40 70 Z" fill="#2A110D"/><path d="M58 28 L78 56 L62 64Z M142 28 L122 56 L138 64Z" fill="#D95536"/><path d="M62 96 L90 104 L84 111 L68 106Z M138 96 L110 104 L116 111 L132 106Z" fill="#E59F48"/><path d="M100 60 L114 150 L100 172 L86 150Z" fill="#FBF9F4"/><path d="M91 150 L109 150 L100 161Z" fill="#2A110D"/><path d="M68 186 L96 198 L92 208 L74 216Z M132 186 L104 198 L108 208 L126 216Z" fill="#2A110D"/><path d="M93 197 L107 197 L113 234 L100 248 L87 234Z" fill="#D95536"/></symbol>
+<symbol id="chip" viewBox="0 0 200 200"><circle cx="100" cy="100" r="98" fill="#D95536"/><circle cx="100" cy="100" r="86" fill="none" stroke="#2A110D" stroke-width="24" stroke-dasharray="20 47.5"/><circle cx="100" cy="100" r="72" fill="#E59F48" stroke="#D95536" stroke-width="3"/><use href="#wolfhead" x="48" y="38" width="104" height="104"/></symbol>
+<symbol id="wolfhead" viewBox="20 6 160 192"><path d="M52 10 L82 52 L100 46 L118 52 L148 10 L160 70 L154 100 L176 118 L156 124 L168 140 L144 142 L120 176 L100 194 L80 176 L56 142 L32 140 L44 124 L24 118 L46 100 L40 70 Z" fill="#2A110D"/><path d="M58 28 L78 56 L62 64Z M142 28 L122 56 L138 64Z" fill="#D95536"/><path d="M62 96 L90 104 L84 111 L68 106Z M138 96 L110 104 L116 111 L132 106Z" fill="#E59F48"/><path d="M100 60 L114 150 L100 172 L86 150Z" fill="#FBF9F4"/><path d="M91 150 L109 150 L100 161Z" fill="#2A110D"/></symbol></svg>
+<div class="wrap">
+<header>
+ <div class="brand"><svg width="44" height="54" aria-hidden="true"><use href="#wolf"/></svg><span class="blk wt">WOLF <i>of</i><br>WORK<br><em>STREET</em></span></div>
+ <div class="stats" id="pills"></div>
+</header>
+<main id="app"></main>
+</div>
+<div id="modal"></div>
+<script>
+{
+const CATS=[{k:'Elevator Pitch',s:'Pitch',c:'#E59F48',t:'#2A110D'},{k:'Role-play',s:'Role-play',c:'#523A85',t:'#FBF9F4'},{k:'Taboo',s:'Taboo',c:'#D95536',t:'#FBF9F4'},{k:'Scenario',s:'Scenario',c:'#A892E0',t:'#2A110D'},{k:'Small Talk',s:'Small talk',c:'#2A110D',t:'#FBF9F4'}];
+const COLS=[['#E59F48','#2A110D'],['#D95536','#FBF9F4'],['#523A85','#FBF9F4'],['#2A110D','#FBF9F4'],['#A892E0','#2A110D'],['#F07A5C','#2A110D']];
+const LINE=['#E59F48','#FF9E80','#FBF9F4','#FFD39A','#C9B8FF','#F07A5C','#E7DCCB','#FFC266'];
+const STAKE={L:[1,-1],H:[3,-2]};
+const top=a=>a.reduce((m,p)=>p.v>m.v?p:m,a[0]),low=a=>a.reduce((m,p)=>p.v<m.v?p:m,a[0]);
+const NEWS=[
+ {t:'Scandal!',d:'The top employee was late for an important meeting.',f:a=>{const p=top(a);p.v-=3;return p.name+': stock −3'}},
+ {t:'Team building day!',d:'Everyone had fun at the escape room. Team spirit is up.',f:a=>{a.forEach(p=>p.v+=1);return'Everyone: stock +1'}},
+ {t:'Market crash!',d:'Panic on the trading floor.',f:()=>'All bets are doubled during the next round. Play it on the table.'},
+ {t:'Insider tip',d:'Someone heard something at the coffee machine…',f:()=>'The next Performer must reveal the category before choosing their risk.'},
+ {t:'Employee of the Month',d:'Everyone deserves a second chance!',f:a=>{const p=low(a);p.v+=2;return p.name+': stock +2'}},
+ {t:'Bull market',d:'Investors love reliable people.',f:a=>{const l=a.filter(p=>p.v>=10);l.forEach(p=>p.v+=1);return l.length?'Every stock at 10 or more: +1':'Nobody is at 10 or more. No change.'}},
+ {t:'Missed deadline',d:'The project was late. Somebody has to take responsibility.',f:a=>{const p=a[Math.floor(Math.random()*a.length)];p.v-=1;return p.name+' (random): stock −1. Accountability!'}},
+ {t:'Calm market',d:'A quiet day at the office.',f:()=>'Nothing happens. Enjoy your coffee.'}
+];
+
+/* ---- PWA: install, offline, screen awake ---- */
+let deferredPrompt=null,wl=null;
+const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function installBox(){
+ if(standalone())return'';
+ if(deferredPrompt)return'<div class="inst"><span>Play full screen: install the app on this phone.</span><button data-a="install">Install</button></div>';
+ if(isIOS)return'<div class="inst"><span>To install: tap Share, then “Add to Home Screen”.</span></div>';
+ return'';
+}
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;if(S.phase==='setup')render()});
+addEventListener('appinstalled',()=>{deferredPrompt=null;if(S.phase==='setup')render()});
+async function keepAwake(){
+ if(!('wakeLock' in navigator)||wl||S.phase!=='play'||document.visibilityState!=='visible')return;
+ try{wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}catch(e){wl=null}
+}
+function letSleep(){if(wl){wl.release().catch(()=>{});wl=null}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')keepAwake()});
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+const NC=['#D95536','#523A85','#2A110D','#E59F48'];
+const KEY='wows-addon-v2';
+const fresh=()=>({phase:'setup',names:['Lea','Tom','Ines','Hugo'],gameMin:35,players:[],hist:[],turn:0,cur:0,cat:0,risk:'L',sec:45,mods:{short:false,safety:false,dbl:false},stage:'pick',last:null,gameEnd:0,coins:{}});
+let S;try{S=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){S=fresh()}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clamp=v=>Math.max(0,Math.min(20,v));
+const $=id=>document.getElementById(id);
+let tLeft=45,tRun=false,tInt=null,ac=null;
+const beep=(f,d)=>{try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(.25,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.start();o.stop(ac.currentTime+d)}catch(e){}};
+const fmt=s=>Math.floor(s/60)+':'+String(Math.max(0,s%60)).padStart(2,'0');
+const snap=l=>S.hist.push({l,v:S.players.map(p=>p.v)});
+const round=()=>S.players.length?Math.floor(S.turn/S.players.length)+1:1;
+const maxT=()=>S.mods.short?30:S.sec;
+
+function pills(){
+ if(S.phase==='setup'){$('pills').innerHTML='';return}
+ const idx=S.players.reduce((s,p)=>s+p.v,0),start=S.players.length*10,ch=start?((idx-start)/start*100):0,left=Math.round((S.gameEnd-Date.now())/1000);
+ $('pills').innerHTML=`<div class="st s-or"><small>WOWS INDEX</small><b class="blk">${idx} <span style="font-size:13px">${ch>=0?'▲':'▼'}${Math.abs(ch).toFixed(0)}%</span></b></div>
+ <div class="st ${left>0?'s-dk':'s-red'}" id="gclock"><small>${left>0?'BELL IN':'TIME IS UP'}</small><b class="blk">${left>0?fmt(left):'BELL!'}</b></div>
+ <div class="st s-pu"><small>ROUND</small><b class="blk">${round()}</b></div>
+ ${S.phase==='play'?'<button class="endb" data-a="end">End game</button>':'<button class="endb" data-a="back">Back</button>'}`;
+}
+
+function setup(){
+ return `<section class="setup" style="display:flex;flex-direction:column;gap:16px">
+ <div class="hero"><svg width="110" height="137" aria-hidden="true"><use href="#wolf"/></svg><h1 class="blk">WOLF <i>of</i><br>WORK<br><em>STREET</em></h1></div>
+ <p class="hint" style="text-align:center">The live trading screen for your board game. Put the phone in the middle of the table.</p>
+ ${installBox()}
+ <div class="row2"><span class="blk" style="font-size:20px">Players · ${S.names.length}</span><button class="sm" data-a="add">+ Add a player</button></div>
+ <div class="pl" id="names">${S.names.map((n,i)=>{const c=COLS[i%6];return`<div class="pr" style="--c:${c[0]};--k:${c[1]}"><input type="text" value="${esc(n)}" maxlength="14" data-n="${i}" placeholder="Name" aria-label="Player ${i+1} name"><button class="x" data-a="rm" data-i="${i}" aria-label="Remove player" ${S.names.length<=4?'disabled':''}>×</button></div>`}).join('')}</div>
+ <div class="row2" style="background:var(--sand);border-radius:18px;padding:10px 14px"><span style="font-weight:700">Game bell</span><div class="step"><button class="sm" data-a="gm" data-d="-5" aria-label="5 minutes less">−</button><b class="blk">${S.gameMin}</b><span style="font-weight:700">min</span><button class="sm" data-a="gm" data-d="5" aria-label="5 minutes more">+</button></div></div>
+ <p class="hint">Minimum 4 players, no maximum. Everyone starts at stock value 10. Soft Coins, bets and cards stay on the table.</p>
+ <button class="big blk" style="background:var(--red);color:var(--bg)" data-a="start">OPEN THE MARKET</button></section>`;
+}
+
+function spark(j){
+ const h=S.hist.slice(-8),n=h.length;if(n<2)return'';
+ return `<svg width="64" height="22" viewBox="0 0 64 22" aria-hidden="true"><polyline points="${h.map((s,i)=>(i*64/(n-1)).toFixed(1)+','+(20-s.v[j]).toFixed(1)).join(' ')}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" opacity=".8"/></svg>`;
+}
+
+function market(){
+ const prev=S.hist.length>1?S.hist[S.hist.length-2].v:null;
+ const order=S.players.map((p,i)=>({...p,i})).sort((a,b)=>b.v-a.v);const rank={};order.forEach((p,r)=>rank[p.i]=r+1);
+ return `<div><section class="market"><div class="row2"><span class="blk" style="font-size:18px">The market</span><span style="font-weight:700;font-size:13px;opacity:.8">stock value 0–20</span></div><div class="fig"><svg id="chart" role="img" aria-label="Stock value of each player after every turn"></svg></div></section>
+ <div class="tiles">${S.players.map((p,i)=>{const d=prev?p.v-prev[i]:0,on=i===S.cur;return`<button class="tile ${on?'on':''}" style="--c:${p.c};--k:${p.k}" data-a="pick" data-i="${i}" aria-pressed="${on}" aria-label="${esc(p.name)}, stock ${p.v}">${on?'<span class="badge blk">ON STAGE</span>':''}<span class="rank blk">${rank[i]}</span><span><span class="nm">${esc(p.name)}</span><br><span class="tk">$${esc(p.tk)}</span></span><span style="display:flex;align-items:flex-end;justify-content:space-between;gap:6px"><span><span class="v blk">${p.v}</span><br><span class="d blk">${d>0?'▲ +'+d:d<0?'▼ '+d:'—'}</span></span>${spark(i)}</span></button>`}).join('')}</div></div>`;
+}
+
+function stage(still){
+ const pc=still?'':' pop',p=S.players[S.cur],c=CATS[S.cat],m=S.mods,st=STAKE[S.risk];
+ let up=st[0],dn=m.safety?0:st[1];if(m.dbl){up*=2;dn*=2}
+ if(S.stage==='done'){const L=S.last,ok=L.ok;return`<section class="card${pc}" style="--cc:${ok?'#523A85':'#D95536'};--ck:#FBF9F4"><div class="ctop"><div><span class="blk" style="font-size:12px;letter-spacing:.08em">VERDICT · ${esc(p.tk)}</span><div class="who blk">${ok?'SUCCESS':'FAIL'}</div><span class="sub">${esc(p.name)} is now at ${p.v}</span></div><div class="blk" style="font-size:56px;line-height:1">${L.d>0?'+':''}${L.d}</div></div>
+ <div class="cbody"><p class="hint" style="font-size:15px;color:var(--dk)">Reveal the BUY / SELL cards and pay the bets on the table.</p><button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="next">NEXT PERFORMER →</button><div class="row2"><button class="lnk" data-a="appeal">Appeal won: flip the verdict</button><button class="lnk" data-a="undo">Undo</button></div></div></section>`}
+ const R=2*Math.PI*44,frac=Math.max(0,tLeft)/maxT();
+ return `<section class="card${pc}" style="--cc:${c.c};--ck:${c.t}"><div class="ctop"><div><span class="blk" style="font-size:12px;letter-spacing:.08em">ON STAGE · ${esc(p.tk)}</span><div class="who blk">${esc(p.name)}</div><span class="sub">${c.k} · ${S.risk==='H'?'High risk':'Low risk'}</span></div>
+ <button class="ring" data-a="tgo" aria-label="${tRun?'Pause':'Start'} the timer"><svg width="100%" height="100%" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-width="10"/><circle cx="50" cy="50" r="44" fill="none" stroke="${tLeft<=10&&tLeft<maxT()?'#FBF9F4':'currentColor'}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${(frac*R).toFixed(1)} ${R.toFixed(1)}" transform="rotate(-90 50 50)"/></svg><span class="blk" role="timer">${tLeft>0?fmt(tLeft):'TIME!'}</span></button></div>
+ <div class="cbody">
+ <div class="tokens" role="group" aria-label="Category">${CATS.map((k,i)=>`<button class="tok" style="--c:${k.c}" data-a="cat" data-i="${i}" aria-pressed="${i===S.cat}"><i></i>${k.s}</button>`).join('')}</div>
+ <div class="seg" role="group" aria-label="Risk"><button data-a="risk" data-r="L" aria-pressed="${S.risk==='L'}">Low · +1 / −1</button><button data-a="risk" data-r="H" aria-pressed="${S.risk==='H'}">High · +3 / −2</button></div>
+ <div class="mods" role="group" aria-label="Bonus and malus cards">${[['short','Short Clock'],['safety','Safety Net'],['dbl','Double Up']].map(([k,t])=>`<button class="mod" data-a="mod" data-k="${k}" aria-pressed="${m[k]}">${t}</button>`).join('')}</div>
+ <div class="ctl"><button class="go blk" data-a="tgo">${tRun?'PAUSE':tLeft>0&&tLeft<maxT()?'RESUME':'START '+maxT()+' S'}</button><button class="sm" data-a="treset" aria-label="Reset timer">↺</button>${m.short?'':[30,45,60,90].map(s=>`<button class="sm" data-a="sec" data-s="${s}" aria-pressed="${s===S.sec}">${s}</button>`).join('')}</div>
+ <div class="verd"><button class="vb blk" style="background:var(--red)" data-a="verdict" data-ok="0">FAIL<small>${dn?dn:'±0'}</small></button><button class="vb blk" style="background:var(--pu)" data-a="verdict" data-ok="1">SUCCESS<small>+${up}</small></button></div>
+ <p class="hint">Majority vote of the table. A tie means success.</p></div></section>`;
+}
+
+function endScreen(){
+ const rows=S.players.map(p=>{const c=+S.coins[p.tk]||0;return{...p,f:c+p.v*2}}).sort((a,b)=>b.f-a.f);
+ const filled=Object.values(S.coins).some(v=>+v>0),pod=[rows[1],rows[0],rows[2]],H=[150,190,130];
+ return `<section style="display:flex;flex-direction:column;gap:18px;max-width:900px;margin:0 auto;width:100%">
+ <div class="hero"><svg width="80" height="100" aria-hidden="true"><use href="#wolf"/></svg><div><span class="hint">${filled?'The Wolf of Work Street is':'Final settlement'}</span><h1 class="blk" style="font-size:clamp(30px,6vw,48px)">${filled?esc(rows[0].name):'Count your coins'}</h1></div></div>
+ ${filled?`<div class="podium">${pod.map((p,i)=>p?`<div class="pod" style="--c:${p.c};--k:${p.k};height:${H[i]}px"><span>${esc(p.name)}</span><b class="blk">${p.f}</b><small style="font-weight:700">${i===1?'1st':i===0?'2nd':'3rd'}</small></div>`:'<div></div>').join('')}</div>`:''}
+ <p class="hint">Type the Soft Coins each player has on the table. Fortune = coins + stock × 2.</p>
+ <div class="coins">${rows.map(p=>`<div class="cn"><span style="width:14px;height:40px;border-radius:7px;background:${p.c};flex:none"></span><span class="nm">${esc(p.name)}<small>stock ${p.v} × 2</small></span><input type="number" min="0" inputmode="numeric" value="${S.coins[p.tk]??''}" placeholder="0" data-c="${esc(p.tk)}" aria-label="Soft Coins of ${esc(p.name)}"><b class="f blk">${p.f}</b></div>`).join('')}</div>
+ <button class="big blk" style="background:var(--or)" data-a="new">NEW GAME</button></section>`;
+}
+
+function render(){
+ pills();const a=$('app');
+ if(S.phase==='setup')a.innerHTML=setup();
+ else if(S.phase==='end')a.innerHTML=endScreen();
+ else{a.innerHTML=`<div class="main"><div id="stageCol">${stage()}</div>${market()}</div>`;drawChart()}
+ save();
+}
+
+let ro;
+function drawChart(){
+ const s=$('chart');if(!s)return;
+ const W=s.clientWidth,H=s.clientHeight,n=S.hist.length,pad={l:22,r:46,t:10,b:18};
+ const x=i=>pad.l+(n<2?0:i*(W-pad.l-pad.r)/(n-1)),y=v=>pad.t+(20-v)*(H-pad.t-pad.b)/20;
+ let g='';[0,10,20].forEach(v=>{g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="#FBF9F4" stroke-opacity=".18"/><text x="${pad.l-6}" y="${y(v)+4}" fill="#FBF9F4" fill-opacity=".7" font-size="11" text-anchor="end" font-family="Archivo" font-weight="700">${v}</text>`});
+ S.hist.forEach((h,i)=>{if(h.l==='news')g+=`<circle cx="${x(i)}" cy="${H-pad.b+8}" r="4" fill="#E59F48"/>`});
+ const many=S.players.length>8,labels=[];
+ S.players.forEach((p,j)=>{const on=j===S.cur,pts=S.hist.map((h,i)=>x(i).toFixed(1)+','+y(h.v[j]).toFixed(1)).join(' ');
+  if(on)return;g+=`<polyline points="${pts}" fill="none" stroke="${LINE[j%8]}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" opacity="${many?.35:.75}"/>`;labels.push({y:y(S.hist[n-1].v[j]),c:LINE[j%8],t:p.tk})});
+ const cp=S.players[S.cur],cj=S.cur,cpts=S.hist.map((h,i)=>x(i).toFixed(1)+','+y(h.v[cj]).toFixed(1)).join(' ');
+ g+=`<polyline points="${cpts}" fill="none" stroke="#FBF9F4" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${x(n-1)}" cy="${y(S.hist[n-1].v[cj])}" r="6" fill="#E59F48" stroke="#FBF9F4" stroke-width="3"/>`;
+ labels.push({y:y(S.hist[n-1].v[cj]),c:'#FBF9F4',t:cp.tk,on:1});
+ labels.sort((a,b)=>a.y-b.y);let last=-99;
+ if(!many)labels.forEach(l=>{const yy=Math.max(l.y+4,last+12);last=yy;g+=`<text x="${W-pad.r+8}" y="${yy}" fill="${l.c}" font-size="11" font-family="Archivo Black">${esc(l.t)}</text>`});
+ else g+=`<text x="${W-pad.r+8}" y="${y(S.hist[n-1].v[cj])+4}" fill="#FBF9F4" font-size="11" font-family="Archivo Black">${esc(cp.tk)}</text>`;
+ s.innerHTML=g;
+ if(!ro)ro=new ResizeObserver(()=>drawChart());ro.disconnect();ro.observe(s);
+}
+
+function tick(){
+ if(!tRun)return;tLeft--;
+ if(tLeft<=5&&tLeft>0)beep(880,.12);
+ if(tLeft<=0){tRun=false;clearInterval(tInt);beep(440,.7);try{navigator.vibrate&&navigator.vibrate([300,100,300])}catch(e){}}
+ const col=$('stageCol');if(col)col.innerHTML=stage(true);
+}
+function resetTimer(){tRun=false;clearInterval(tInt);tLeft=maxT()}
+function applyVerdict(ok,from){const p=S.players[S.cur],st=STAKE[S.risk];let d=ok?st[0]:(S.mods.safety?0:st[1]);if(S.mods.dbl)d*=2;p.v=clamp(from+d);return p.v-from}
+
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a,i=+b.dataset.i;
+ if(a==='install'&&deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.finally(()=>{deferredPrompt=null;render()});return}
+ if(a==='add'){S.names.push('');render();const ins=document.querySelectorAll('#names input');ins[ins.length-1].focus();return}
+ if(a==='rm')S.names.splice(i,1);
+ if(a==='gm')S.gameMin=Math.max(10,Math.min(120,S.gameMin+ +b.dataset.d));
+ if(a==='start'){const names=S.names.map(n=>n.trim()).filter(Boolean);if(names.length<4){alertBox('You need at least 4 players.');return}
+  const used={};S.players=names.map((n,j)=>{let tk=n.replace(/[^A-Za-z]/g,'').slice(0,3).toUpperCase()||'P'+(j+1);while(used[tk])tk=tk.slice(0,2)+(j+1);used[tk]=1;return{name:n,tk,v:10,c:COLS[j%6][0],k:COLS[j%6][1]}});
+  Object.assign(S,{phase:'play',hist:[],turn:0,cur:0,cat:0,risk:'L',sec:45,stage:'pick',coins:{},gameEnd:Date.now()+S.gameMin*60000,mods:{short:false,safety:false,dbl:false}});snap('start');resetTimer()}
+ if(a==='pick'&&S.stage!=='done'){S.cur=i;resetTimer();window.innerWidth<960&&window.scrollTo({top:0,behavior:'smooth'})}
+ if(a==='cat')S.cat=i;
+ if(a==='risk'){S.risk=b.dataset.r;S.sec=S.risk==='H'?60:45;resetTimer()}
+ if(a==='mod'){S.mods[b.dataset.k]=!S.mods[b.dataset.k];if(b.dataset.k==='short')resetTimer()}
+ if(a==='sec'){S.sec=+b.dataset.s;resetTimer()}
+ if(a==='tgo'){if(tLeft<=0)resetTimer();tRun=!tRun;clearInterval(tInt);if(tRun){beep(660,.08);tInt=setInterval(tick,1000)};const col=$('stageCol');if(col)col.innerHTML=stage(true);return}
+ if(a==='treset')resetTimer();
+ if(a==='verdict'){resetTimer();const ok=b.dataset.ok==='1',p=S.players[S.cur],prev=p.v,d=applyVerdict(ok,prev);S.last={ok,d,prev};S.stage='done';snap('turn');beep(ok?990:220,.25)}
+ if(a==='appeal'&&S.last){const L=S.last;L.ok=!L.ok;L.d=applyVerdict(L.ok,L.prev);S.hist[S.hist.length-1].v[S.cur]=S.players[S.cur].v}
+ if(a==='undo'&&S.last){S.players[S.cur].v=S.last.prev;S.hist.pop();S.stage='pick';S.last=null}
+ if(a==='next'){S.turn++;S.last=null;S.stage='pick';S.mods={short:false,safety:false,dbl:false};S.risk='L';S.sec=45;S.cur=(S.cur+1)%S.players.length;resetTimer();if(S.cur===0){render();drawNews();return}}
+ if(a==='newsok'){$('modal').innerHTML=''}
+ if(a==='alertok'){$('modal').innerHTML='';return}
+ if(a==='end'){tRun=false;clearInterval(tInt);S.phase='end'}
+ if(a==='back')S.phase='play';
+ if(a==='new')S={...fresh(),names:S.players.map(p=>p.name),gameMin:S.gameMin};
+ render();
+ if(S.phase==='play')keepAwake();else letSleep();
+});
+document.addEventListener('input',e=>{
+ const t=e.target;
+ if(t.dataset.n!==undefined){S.names[+t.dataset.n]=t.value;save()}
+ if(t.dataset.c!==undefined){S.coins[t.dataset.c]=t.value;const id=t.dataset.c;render();const n=document.querySelector(`[data-c="${CSS.escape(id)}"]`);if(n){n.focus();const v=n.value;n.value='';n.value=v}}
+});
+function drawNews(){
+ const k=Math.floor(Math.random()*NEWS.length),N=NEWS[k],eff=N.f(S.players);S.players.forEach(p=>p.v=clamp(p.v));snap('news');
+ const c=NC[k%4];
+ $('modal').innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-labelledby="nt"><div class="card news pop" style="--cc:${c};--ck:${c==='#E59F48'?'#2A110D':'#FBF9F4'}"><div class="ctop"><span class="blk" style="font-size:12px;letter-spacing:.08em">MARKET NEWS · END OF ROUND ${round()-1}</span><h3 class="blk" id="nt">${N.t}</h3></div><div class="cbody"><p>${N.d}</p><div class="eff">${esc(eff)}</div><button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="newsok">BACK TO TRADING</button></div></div></div>`;
+ render();beep(523,.15);setTimeout(()=>beep(784,.25),160);
+ const btn=document.querySelector('[data-a=newsok]');btn&&btn.focus();
+}
+function alertBox(msg){$('modal').innerHTML=`<div class="modal" role="alertdialog" aria-modal="true"><div class="card news pop" style="--cc:#D95536;--ck:#FBF9F4"><div class="ctop"><h3 class="blk">Wait!</h3></div><div class="cbody"><p>${esc(msg)}</p><button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="alertok">OK</button></div></div></div>`}
+let bellRung=false;
+setInterval(()=>{if(S.phase==='setup')return;const g=$('gclock');if(!g)return;const left=Math.round((S.gameEnd-Date.now())/1000);
+ if(left<=0){if(!bellRung){bellRung=true;beep(392,.4);setTimeout(()=>beep(392,.6),450);pills()}}else g.querySelector('b').textContent=fmt(left)},1000);
+if(S.phase!=='setup')resetTimer();
+render();
+}
+</script>
+</body>
+</html>
