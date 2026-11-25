@@ -134,6 +134,31 @@ header{position:sticky;top:0;z-index:6;background:var(--bg);padding:8px 0;margin
 .dots{display:flex;gap:8px}.dots i{width:10px;height:10px;border-radius:50%;background:var(--sand);transition:all .2s}.dots i.on{background:var(--dk);width:26px;border-radius:6px}
 .navb{min-height:48px;min-width:96px;border-radius:14px;font-weight:700;background:var(--sand)}.navb.dk{background:var(--dk);color:var(--bg)}.navb[disabled]{opacity:.35;cursor:default}
 .skip{font-weight:700;text-decoration:underline;color:var(--mut);min-height:44px}
+
+.coin{display:flex;flex-direction:column;align-items:center;justify-content:center;width:84px;height:84px;flex:none;border-radius:50%;border:5px dashed currentColor;line-height:1}.coin b{font-size:30px}.coin small{font-family:'Archivo';font-weight:700;font-size:11px}
+.lbl2{font-size:12px;letter-spacing:.06em;font-weight:700;text-transform:uppercase;color:var(--mut)}
+.seg button small{font-weight:600;font-size:12px;opacity:.8}
+.warn{background:#FFE7C2;border-radius:12px;padding:8px 12px;font-weight:700;font-size:13px}
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;width:100%}.steps span{font-size:10px;font-weight:700;text-align:center;padding-top:7px;border-top:4px solid var(--sand);color:var(--mut)}.steps .ok{border-color:var(--pu);color:var(--pu)}.steps .now{border-color:var(--dk);color:var(--dk)}
+.bs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bb{min-height:84px;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid transparent;line-height:1.1}.bb b{font-size:26px}.bb small{font-weight:700;font-size:13px}
+.bb.buy{background:#E6DEF7;color:var(--pu)}.bb.sell{background:#F9DDD4;color:var(--red)}
+.bb.buy[aria-pressed=true]{background:var(--pu);color:var(--bg);border-color:var(--dk)}.bb.sell[aria-pressed=true]{background:var(--red);color:var(--bg);border-color:var(--dk)}
+.stk{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stk .sm{min-height:56px;font-size:24px;border-radius:16px}.stk .sm[disabled]{opacity:.3}
+.jkb{min-height:48px;border-radius:14px;border:2px dashed var(--pu);color:var(--pu);font-weight:700}.jkb[aria-pressed=true]{background:var(--pu);color:var(--bg);border-style:solid}
+.big[disabled]{opacity:.4;cursor:default}
+.invl,.srs{display:flex;flex-direction:column;gap:6px}
+.inv,.sr{display:flex;align-items:center;gap:10px;min-height:56px;padding:6px 12px;border-radius:16px;background:var(--sand);text-align:left;width:100%}
+.inv[disabled]{opacity:.5}
+.dot{width:14px;height:36px;border-radius:7px;flex:none}
+.nm2{flex:1;display:flex;flex-direction:column;font-weight:700;line-height:1.15}.nm2 small{font-weight:600;color:var(--mut);font-size:12px}
+.stt{font-weight:700;font-size:13px;color:var(--mut)}.stt.ok{color:var(--pu)}
+.dl{font-size:22px;min-width:44px;text-align:right}.dl.pos{color:var(--pu)}.dl.neg{color:var(--red)}
+.sr.off .dl{opacity:.35;text-decoration:line-through}
+.tg{width:44px;height:44px;flex:none;border-radius:12px;border:2px solid var(--dk);font-size:20px;font-weight:700}.tg[aria-pressed=true]{background:var(--dk);color:var(--bg)}.tg[disabled]{opacity:.25}
+.tot{font-size:20px;min-width:34px;text-align:right}
+.tile .jk{align-self:flex-start;margin-top:6px;font-size:10px;font-weight:700;border:1.5px solid currentColor;border-radius:999px;padding:1px 7px;opacity:.85}.tile .jk.used{text-decoration:line-through;opacity:.4}
+.tile .d{display:inline-block;margin-bottom:2px}
 #scrim{display:none}
 @media(max-width:959px){
  .stats{width:100%}.st{flex:1}
@@ -196,23 +221,27 @@ header{position:sticky;top:0;z-index:6;background:var(--bg);padding:8px 0;margin
 <div id="modal"></div>
 <script>
 {
-const CATS=[{k:'Elevator Pitch',s:'Pitch',c:'#E59F48',t:'#2A110D'},{k:'Role-play',s:'Role-play',c:'#523A85',t:'#FBF9F4'},{k:'Taboo',s:'Taboo',c:'#D95536',t:'#FBF9F4'},{k:'Scenario',s:'Scenario',c:'#A892E0',t:'#2A110D'},{k:'Small Talk',s:'Small talk',c:'#2A110D',t:'#FBF9F4'}];
+/* ================= DATA ================= */
 const COLS=[['#E59F48','#2A110D'],['#D95536','#FBF9F4'],['#523A85','#FBF9F4'],['#2A110D','#FBF9F4'],['#A892E0','#2A110D'],['#F07A5C','#2A110D']];
 const LINE=['#E59F48','#FF9E80','#FBF9F4','#FFD39A','#C9B8FF','#F07A5C','#E7DCCB','#FFC266'];
-const STAKE={L:[1,-1],H:[3,-2]};
-const top=a=>a.reduce((m,p)=>p.v>m.v?p:m,a[0]),low=a=>a.reduce((m,p)=>p.v<m.v?p:m,a[0]);
+const RISK={L:{n:'Easy',t:45,s:[1,-1]},H:{n:'Hard',t:60,s:[3,-2]}};
+const richest=a=>a.reduce((m,p)=>p.v>m.v?p:m,a[0]),poorest=a=>a.reduce((m,p)=>p.v<m.v?p:m,a[0]);
+/* Market News: imposed by the add-on. Each one changes the game. */
 const NEWS=[
- {t:'Scandal!',d:'The top employee was late for an important meeting.',f:a=>{const p=top(a);p.v-=3;return p.name+': stock −3'}},
- {t:'Team building day!',d:'Everyone had fun at the escape room. Team spirit is up.',f:a=>{a.forEach(p=>p.v+=1);return'Everyone: stock +1'}},
- {t:'Market crash!',d:'Panic on the trading floor.',f:()=>'All bets are doubled during the next round. Play it on the table.'},
- {t:'Insider tip',d:'Someone heard something at the coffee machine…',f:()=>'The next Performer must reveal the category before choosing their risk.'},
- {t:'Employee of the Month',d:'Everyone deserves a second chance!',f:a=>{const p=low(a);p.v+=2;return p.name+': stock +2'}},
- {t:'Bull market',d:'Investors love reliable people.',f:a=>{const l=a.filter(p=>p.v>=10);l.forEach(p=>p.v+=1);return l.length?'Every stock at 10 or more: +1':'Nobody is at 10 or more. No change.'}},
- {t:'Missed deadline',d:'The project was late. Somebody has to take responsibility.',f:a=>{const p=a[Math.floor(Math.random()*a.length)];p.v-=1;return p.name+' (random): stock −1. Accountability!'}},
+ {t:'Scandal!',d:'The richest employee was late for an important meeting.',f:a=>{const p=richest(a);p.v-=3;return p.name+' loses 3 coins.'}},
+ {t:'Team building day!',d:'Everyone had fun together. Team spirit is up.',f:a=>{a.forEach(p=>p.v+=1);return'Everyone wins 1 coin.'}},
+ {t:'Market crash!',d:'Panic on the trading floor.',f:()=>{S.crash=true;return'During the next round, all bets are doubled: wins and losses × 2.'}},
+ {t:'Employee of the Month',d:'Everyone deserves a second chance!',f:a=>{const p=poorest(a);p.v+=2;return p.name+' wins 2 coins.'}},
+ {t:'Bull market',d:'Investors love reliable people.',f:a=>{const l=a.filter(p=>p.v>=10);l.forEach(p=>p.v+=1);return l.length?'Every player with 10 coins or more wins 1 coin.':'Nobody has 10 coins or more. No change.'}},
+ {t:'Missed deadline',d:'The project was late. Somebody has to take responsibility.',f:a=>{const p=a[rnd(a.length)];p.v-=1;return p.name+' (drawn at random) loses 1 coin. Accountability!'}},
+ {t:'Golden opportunity',d:'A big client is watching the next presentation.',f:()=>{S.golden=true;return'The next Performer’s result is doubled: win or lose.'}},
  {t:'Calm market',d:'A quiet day at the office.',f:()=>'Nothing happens. Enjoy your coffee.'}
 ];
+const NC=['#D95536','#523A85','#2A110D','#E59F48'];
+/* true random (crypto), no modulo bias */
+function rnd(n){const a=new Uint32Array(1),lim=Math.floor(4294967296/n)*n;let x;do{crypto.getRandomValues(a);x=a[0]}while(x>=lim);return x%n}
 
-/* ---- PWA: install, offline, screen awake ---- */
+/* ================= PWA: install, offline, screen awake ================= */
 let deferredPrompt=null,wl=null;
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
@@ -231,23 +260,48 @@ async function keepAwake(){
 function letSleep(){if(wl){wl.release().catch(()=>{});wl=null}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')keepAwake()});
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-const NC=['#D95536','#523A85','#2A110D','#E59F48'];
-const KEY='wows-addon-v2';
-const fresh=()=>({phase:'setup',names:['Lea','Tom','Ines','Hugo'],gameMin:35,players:[],hist:[],turn:0,cur:0,cat:0,risk:'L',sec:45,mods:{short:false,safety:false,dbl:false},stage:'pick',last:null,gameEnd:0,coins:{},sheet:true,focus:false,slide:0});
+
+/* ================= STATE ================= */
+const KEY='wows-addon-v3';
+const fresh=()=>({phase:'setup',names:['Lea','Tom','Ines','Hugo'],gameMin:35,players:[],hist:[],turn:0,cur:0,risk:'L',mods:{short:false,safety:false,dbl:false},
+ stage:'card',bets:{},betFor:null,tmp:{},verdict:null,on:{},prevV:null,crash:false,golden:false,lastNews:-1,jokersLeft:2,gameEnd:0,sheet:true,slide:0});
 let S;try{S=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){S=fresh()}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const clamp=v=>Math.max(0,Math.min(20,v));
 const $=id=>document.getElementById(id);
-let tLeft=45,tRun=false,tInt=null,ac=null;
-const beep=(f,d)=>{try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(.25,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.start();o.stop(ac.currentTime+d)}catch(e){}};
 const fmt=s=>Math.floor(s/60)+':'+String(Math.max(0,s%60)).padStart(2,'0');
 const snap=l=>S.hist.push({l,v:S.players.map(p=>p.v)});
 const round=()=>S.players.length?Math.floor(S.turn/S.players.length)+1:1;
-const maxT=()=>S.stage==='tie'?15:S.mods.short?30:S.sec;
 const phone=()=>innerWidth<960;
+const maxT=()=>S.stage==='tie'?15:S.mods.short?30:RISK[S.risk].t;
+const jokersFree=(self)=>S.jokersLeft-Object.entries(S.bets).filter(([k,b])=>b.side==='J'&&+k!==self).length;
+const investors=()=>S.players.map((p,i)=>i).filter(i=>i!==S.cur);
+const sgn=d=>(d>0?'+':d<0?'−':'±')+Math.abs(d);
 const FLAG='<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M5 4h14v10H5z" fill="#FBF9F4" stroke="currentColor" stroke-width="1.6"/><path d="M5 4h3.5v2.5H5zM12 4h3.5v2.5H12zM8.5 6.5H12V9H8.5zM15.5 6.5H19V9h-3.5zM5 9h3.5v2.5H5zM12 9h3.5v2.5H12zM8.5 11.5H12V14H8.5zM15.5 11.5H19V14h-3.5z" fill="currentColor"/></svg>';
 
+/* ================= SOUND ================= */
+let tLeft=45,tRun=false,tInt=null,ac=null;
+const actx=()=>{try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume()}catch(e){}return ac};
+const beep=(f,d)=>{const c=actx();if(!c)return;try{const o=c.createOscillator(),g=c.createGain();o.frequency.value=f;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.25,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.start();o.stop(c.currentTime+d)}catch(e){}};
+/* wolf howl, made with sound synthesis: a gliding tone with vibrato */
+function howl(){const c=actx();if(!c)return;try{
+ const t=c.currentTime,out=c.createGain(),lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1800;lp.connect(out);out.connect(c.destination);
+ out.gain.setValueAtTime(0.0001,t);out.gain.exponentialRampToValueAtTime(.35,t+.35);out.gain.setValueAtTime(.35,t+2.1);out.gain.exponentialRampToValueAtTime(.0001,t+3.2);
+ const lfo=c.createOscillator(),lg=c.createGain();lfo.frequency.value=5.2;lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(14,t+1.2);lfo.connect(lg);
+ [['sawtooth',1,.18],['sine',1,.6],['sine',2,.12]].forEach(([type,mult,vol])=>{const o=c.createOscillator(),g=c.createGain();o.type=type;g.gain.value=vol;
+  o.frequency.setValueAtTime(300*mult,t);o.frequency.exponentialRampToValueAtTime(640*mult,t+.7);o.frequency.setValueAtTime(640*mult,t+1.6);o.frequency.exponentialRampToValueAtTime(470*mult,t+3.1);
+  lg.connect(o.frequency);o.connect(g);g.connect(lp);o.start(t);o.stop(t+3.3)});
+ lfo.start(t);lfo.stop(t+3.3);
+}catch(e){}}
+
+/* ================= RESULTS ================= */
+function perfDelta(v){ // v: 'S' success, 'F' fail, 'Z' freeze
+ if(v==='Z')return 0;const s=RISK[S.risk].s;let d=v==='S'?s[0]:(S.mods.safety?0:s[1]);if(S.mods.dbl)d*=2;if(S.golden)d*=2;return d}
+function betDelta(i,v){const b=S.bets[i];if(!b||v==='Z'||b.side==='J'||b.side==='N')return 0;const win=(v==='S')===(b.side==='B');return (win?1:-1)*b.amt*(S.crash?2:1)}
+function deltas(){const v=S.verdict,o={};S.players.forEach((p,i)=>o[i]=i===S.cur?perfDelta(v):betDelta(i,v));return o}
+function betLabel(i){if(i===S.cur)return'Performer';const b=S.bets[i];if(!b)return'—';if(b.side==='J')return'Joker';if(b.side==='N')return'No coins';return(b.side==='B'?'BUY ':'SELL ')+b.amt}
+
+/* ================= HEADER ================= */
 function pills(){
  const show=S.phase==='play'||S.phase==='end';$('hdr').style.display=show?'':'none';
  if(!show){$('pills').innerHTML='';return}
@@ -258,6 +312,7 @@ function pills(){
  ${S.phase==='play'?'<button class="endi" data-a="endask" aria-label="End game" title="End game">'+FLAG+'</button>':'<button class="endi blk" data-a="back" aria-label="Back to the game" title="Back to the game" style="font-size:22px">←</button>'}`;
 }
 
+/* ================= SETUP ================= */
 function setup(){
  return `<section class="setup" style="display:flex;flex-direction:column;gap:16px">
  <div class="hero"><svg viewBox="0 0 760 352" style="width:min(420px,88%);height:auto" role="img" aria-label="Wolf of Work Street"><use href="#logo"/></svg></div>
@@ -266,18 +321,20 @@ function setup(){
  <div class="pl" id="names">${S.names.map((n,i)=>{const c=COLS[i%6];return`<div class="pr" style="--c:${c[0]};--k:${c[1]}"><input type="text" value="${esc(n)}" maxlength="14" data-n="${i}" placeholder="Name" aria-label="Player ${i+1} name"><button class="x" data-a="rm" data-i="${i}" aria-label="Remove player" ${S.names.length<=4?'disabled':''}>×</button></div>`}).join('')}</div>
  <button class="addp" data-a="add">+ Add a player</button>
  <div class="row2" style="background:var(--sand);border-radius:18px;padding:10px 14px"><span style="font-weight:700">Game bell</span><div class="step"><button class="sm" data-a="gm" data-d="-5" aria-label="5 minutes less">−</button><b class="blk">${S.gameMin}</b><span style="font-weight:700">min</span><button class="sm" data-a="gm" data-d="5" aria-label="5 minutes more">+</button></div></div>
- <p class="hint">Minimum 4 players, no maximum. Everyone starts at stock value 10. Soft Coins, bets and cards stay on the table.</p>
+ <p class="hint">Minimum 4 players, no maximum. Everyone starts with 10 Soft Coins.</p>
  <button class="big blk" style="background:var(--red);color:var(--bg)" data-a="start">OPEN THE MARKET</button></section>`;
 }
 
+/* ================= RULES CAROUSEL ================= */
 const SLIDES=[
- ['#E59F48','#2A110D','The goal','<p>Be the <b>richest player</b> at the end of the game.</p><p>You earn money by performing well yourself, and by betting well on the others.</p><p><b>Fortune = Soft Coins + (stock value × 2)</b></p>'],
- ['#523A85','#FBF9F4','Setup','<p>Each player takes <b>10 Soft Coins</b>.</p><p>Every stock starts at <b>10</b>.</p><p>The player who arrived earliest this morning starts. That\'s Punctuality!</p>'],
- ['#2A110D','#FBF9F4','A trading day','<ol><li><b>Opening Bell:</b> the Performer picks a category and a risk. Low +1 / −1, High +3 / −2.</li><li><b>Trading:</b> the others bet BUY or SELL, face down, with 1 to 3 coins.</li><li><b>Performance:</b> tap the timer in the app.</li><li><b>Verdict:</b> the table votes Success or Fail and justifies it.</li><li><b>Settlement:</b> good bets pay double, bad bets go to the bank.</li></ol>'],
- ['#F07A5C','#2A110D','It\'s a tie!','<p>The Performer gets a <b>15-second final pitch</b> to convince the table. Then everyone votes again.</p><p>Still a tie? <b>The market freezes:</b> the stock doesn\'t move and all bets are paid back.</p>'],
+ ['#E59F48','#2A110D','The goal','<p>Have the <b>most Soft Coins</b> at the end of the game.</p><p>You win coins by performing well yourself, and by betting well on the others.</p>'],
+ ['#523A85','#FBF9F4','Setup','<p>Each player takes <b>10 Soft Coins</b>.</p><p>Shuffle the challenge cards and the <b>2 Joker cards</b> in one pile: the category is random.</p><p>The player who arrived earliest this morning starts. That\'s Punctuality!</p>'],
+ ['#2A110D','#FBF9F4','A trading day','<ol><li><b>Opening Bell:</b> the Performer draws a card, reads it aloud and enters its risk in the app.</li><li><b>Trading:</b> pass the phone. Each investor bets BUY or SELL, 1 to 3 coins, in secret, or plays a Joker card.</li><li><b>Performance:</b> the investors start the clock.</li><li><b>Verdict:</b> the table debates, then votes Success or Fail.</li><li><b>Settlement:</b> check each result and confirm. Everyone\'s coins update at once.</li></ol>'],
+ ['#523A85','#FBF9F4','Bets & results','<p><b>Good bet:</b> you get your stake back plus the same amount. Bet 2, win 2.</p><p><b>Bad bet:</b> you lose your stake.</p><p><b>Performer:</b> Easy card +1 / −1, Hard card +3 / −2.</p><p><b>Joker:</b> there are only 2 in the pile. If you draw one, keep it: you can use it to skip one bet.</p>'],
+ ['#F07A5C','#2A110D','It\'s a tie!','<p>The Performer gets a <b>15-second final pitch</b> to convince the table. Then everyone votes again.</p><p>Still a tie? <b>The market freezes:</b> nobody wins or loses coins, all bets are paid back.</p>'],
  ['#D95536','#FBF9F4','Special cards','<p><b>Appeal</b> (once per game): contest a verdict with a 20-second plea, then the table votes again.</p><p><b>Bonus &amp; malus</b> like Short Clock, Safety Net or Double Up: tap them in the app when they are played.</p>'],
- ['#A892E0','#2A110D','Market News','<p>After each full round of the table, the app draws a <b>market event</b>: a scandal, a crash, an insider tip…</p><p>Its effect is applied automatically.</p>'],
- ['#F1E8DA','#2A110D','End of the game','<p>The game ends when the <b>bell rings</b> or when a player has <b>no coins left</b>.</p><p>Count your coins: the app finds the <b>Wolf of Work Street</b>.</p>']
+ ['#A892E0','#2A110D','Market News','<p>After each full round, <b>the wolf howls</b>: the app draws a market event at random. It is imposed on everyone and applied automatically.</p><p>The same event never comes twice in a row.</p>'],
+ ['#F1E8DA','#2A110D','End of the game','<p>The game ends when the <b>bell rings</b> or when a player has <b>no coins left</b>.</p><p>The player with the most coins is the <b>Wolf of Work Street</b>.</p>']
 ];
 function rulesScreen(){
  const n=S.names.map(x=>x.trim()).filter(Boolean),N=SLIDES.length+1;
@@ -287,75 +344,113 @@ function rulesScreen(){
  ${SLIDES.map(([c,k,t,b],i)=>`<article class="slide" style="--c:${c};--k:${k}" aria-label="${i+1} of ${N}"><span class="num blk">${i+1} / ${N}</span><h2 class="blk">${t}</h2>${b}</article>`).join('')}
  <article class="slide" style="--c:#FFFFFF;--k:#2A110D;box-shadow:inset 0 0 0 3px #2A110D;border-radius:28px;align-items:center;text-align:center" aria-label="${N} of ${N}"><svg width="90" height="140" aria-hidden="true"><use href="#wolf"/></svg><h2 class="blk">Do you want to start a game?</h2><div class="two" style="width:100%;max-width:420px"><button class="big blk" style="background:var(--sand)" data-a="no">NO</button><button class="big blk" style="background:var(--red);color:var(--bg)" data-a="yes">YES</button></div></article>
  </div>
- <div class="cnav"><button class="navb" data-a="prev" id="cprev">← Back</button><div class="dots" id="dots">${Array.from({length:N},(_,i)=>`<i></i>`).join('')}</div><button class="navb dk" data-a="nextslide" id="cnext">Next →</button></div>
+ <div class="cnav"><button class="navb" data-a="prev" id="cprev">← Back</button><div class="dots" id="dots">${Array.from({length:N},()=>'<i></i>').join('')}</div><button class="navb dk" data-a="nextslide" id="cnext">Next →</button></div>
  </section>`;
 }
 function goSlide(i,smooth){const c=$('car');if(!c)return;const N=c.children.length;S.slide=Math.max(0,Math.min(N-1,i));c.scrollTo({left:S.slide*c.clientWidth,behavior:smooth?'smooth':'auto'});syncDots()}
 function syncDots(){const c=$('car');if(!c)return;const N=c.children.length;[...$('dots').children].forEach((d,k)=>d.classList.toggle('on',k===S.slide));$('cprev').disabled=S.slide===0;$('cnext').style.visibility=S.slide===N-1?'hidden':'visible'}
 
+/* ================= MARKET ================= */
 function spark(j){
- const h=S.hist.slice(-8),n=h.length;if(n<2)return'';
- return `<svg width="64" height="22" viewBox="0 0 64 22" aria-hidden="true"><polyline points="${h.map((s,i)=>(i*64/(n-1)).toFixed(1)+','+(20-s.v[j]).toFixed(1)).join(' ')}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" opacity=".8"/></svg>`;
+ const h=S.hist.slice(-8),n=h.length;if(n<2)return'';const mx=Math.max(20,...h.map(s=>s.v[j]));
+ return `<svg width="64" height="22" viewBox="0 0 64 22" aria-hidden="true"><polyline points="${h.map((s,i)=>(i*64/(n-1)).toFixed(1)+','+(21-s.v[j]*20/mx).toFixed(1)).join(' ')}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" opacity=".8"/></svg>`;
 }
-
 function market(){
  const prev=S.hist.length>1?S.hist[S.hist.length-2].v:null;
  const order=S.players.map((p,i)=>({...p,i})).sort((a,b)=>b.v-a.v);const rank={};order.forEach((p,r)=>rank[p.i]=r+1);
- return `<div><section class="market"><div class="row2"><span class="blk" style="font-size:18px">The market</span><span style="font-weight:700;font-size:13px;opacity:.8">stock value 0–20</span></div><div class="fig"><svg id="chart" role="img" aria-label="Stock value of each player after every turn"></svg></div></section>
- <div class="tiles">${S.players.map((p,i)=>{const d=prev?p.v-prev[i]:0,on=i===S.cur;return`<button class="tile ${on?'on':''}" style="--c:${p.c};--k:${p.k}" data-a="pick" data-i="${i}" aria-pressed="${on}" aria-label="${esc(p.name)}, stock ${p.v}">${on?'<span class="badge blk">ON STAGE</span>':''}<span class="rank blk">${rank[i]}</span><span class="nm">${esc(p.name)}</span><span style="display:flex;align-items:flex-end;justify-content:space-between;gap:6px"><span><span class="v blk">${p.v}</span><br><span class="d blk">${d>0?'▲ +'+d:d<0?'▼ '+d:'—'}</span></span>${spark(i)}</span></button>`}).join('')}</div></div>`;
+ return `<div><section class="market"><div class="row2"><span class="blk" style="font-size:18px">The market</span><span style="font-weight:700;font-size:13px;opacity:.8">Soft Coins of each player</span></div><div class="fig"><svg id="chart" role="img" aria-label="Soft Coins of each player after every turn"></svg></div></section>
+ <div class="tiles">${S.players.map((p,i)=>{const d=prev?p.v-prev[i]:0,on=i===S.cur;return`<button class="tile ${on?'on':''}" style="--c:${p.c};--k:${p.k}" data-a="pick" data-i="${i}" aria-pressed="${on}" aria-label="${esc(p.name)}, ${p.v} coins">${on?'<span class="badge blk">ON STAGE</span>':''}<span class="rank blk">${rank[i]}</span><span class="nm">${esc(p.name)}</span><span style="display:flex;align-items:flex-end;justify-content:space-between;gap:6px"><span><span class="v blk">${p.v}</span><br><span class="d blk">${d>0?'▲ +'+d:d<0?'▼ '+d:'—'}</span></span>${spark(i)}</span></button>`}).join('')}</div></div>`;
 }
 
+/* ================= ON STAGE ================= */
 function ringSvg(stroke){const R=2*Math.PI*44,frac=Math.max(0,tLeft)/maxT();return`<svg width="100%" height="100%" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-width="${stroke}"/><circle cx="50" cy="50" r="44" fill="none" stroke="${tLeft<=10&&tLeft<maxT()?'#FBF9F4':'currentColor'}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${(frac*R).toFixed(1)} ${R.toFixed(1)}" transform="rotate(-90 50 50)"/></svg>`}
+const top=(lab,title,sub,right='')=>`<div class="ctop"><div><span class="blk" style="font-size:12px;letter-spacing:.08em">${lab}</span><div class="who blk">${title}</div><span class="sub">${sub}</span></div>${right}</div>`;
+const steps=k=>`<div class="steps" aria-label="Turn progress">${['Card','Bets','Clock','Verdict','Results'].map((s,i)=>`<span class="${i<k?'ok':i===k?'now':''}">${s}</span>`).join('')}</div>`;
+const flags=()=>`${S.crash?'<div class="warn">Market crash: all bets are doubled this round.</div>':''}${S.golden?'<div class="warn">Golden opportunity: this Performer’s result is doubled.</div>':''}`;
+
 function stage(still){
- const pc=still?'':' pop',p=S.players[S.cur],c=CATS[S.cat],m=S.mods,st=STAKE[S.risk];
- let up=st[0],dn=m.safety?0:st[1];if(m.dbl){up*=2;dn*=2}
- const clock=tLeft>0?fmt(tLeft):'TIME!',L=S.last;
- let cc=c.c,ck=c.t,miniT=esc(p.name),miniS=`${c.k} · ${S.risk==='H'?'High':'Low'} risk`,miniR=clock;
- if(S.stage==='done'){cc=L.freeze?'#F1E8DA':L.ok?'#523A85':'#D95536';ck=L.freeze?'#2A110D':'#FBF9F4';miniT=L.freeze?'Market freeze':L.ok?'Success':'Fail';miniS='Tap to see the result';miniR=(L.d>0?'+':'')+L.d}
- if(S.stage==='tie'){cc='#F07A5C';ck='#2A110D';miniT='Tie · final pitch';miniS=esc(p.name)+' has 15 seconds'}
- const mini=`<button class="mini" style="--cc:${cc};--ck:${ck}" data-a="sheetopen" data-sw="1" aria-label="Open the On stage panel"><span class="mt"><span>ON STAGE</span><b class="blk">${miniT}</b><span>${miniS}</span></span><span class="mclock blk">${miniR}</span><span aria-hidden="true" style="font-size:20px">▲</span></button>`;
+ const pc=still?'':' pop',p=S.players[S.cur],r=RISK[S.risk];
+ const up=perfDelta('S'),dn=perfDelta('F');
  const handle=`<button class="handle" data-a="sheetclose" data-sw="1" aria-label="Fold the panel"></button>`;
- let full;
- if(S.stage==='done'){const ok=L.ok;
-  full=`<section class="card${pc}" style="--cc:${cc};--ck:${ck}">${handle}<div class="ctop"><div><span class="blk" style="font-size:12px;letter-spacing:.08em">VERDICT · ${esc(p.name)}</span><div class="who blk">${L.freeze?'MARKET FREEZE':ok?'SUCCESS':'FAIL'}</div><span class="sub">${esc(p.name)} is now at ${p.v}</span></div><div class="blk" style="font-size:56px;line-height:1">${L.d>0?'+':''}${L.d}</div></div>
-  <div class="cbody"><p class="hint" style="font-size:15px;color:var(--dk)">${L.freeze?'Still a tie: all bets are cancelled. Give every coin back to its owner.':'Reveal the BUY / SELL cards and pay the bets on the table.'}</p><button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="next">NEXT PERFORMER →</button><div class="row2">${L.freeze?'<span></span>':'<button class="lnk" data-a="appeal">Appeal won: flip the verdict</button>'}<button class="undo" data-a="undo">↺ Undo</button></div></div></section>`;
- }else if(S.focus){
-  full=`<section class="card${pc}" style="--cc:${cc};--ck:${ck}">${handle}<div class="ctop" style="flex-direction:column;align-items:center;text-align:center;gap:14px;padding:26px 18px 22px"><div><span class="blk" style="font-size:12px;letter-spacing:.08em">${S.stage==='tie'?'FINAL PITCH':'ON STAGE'}</span><div class="who blk">${esc(p.name)}</div><span class="sub">${S.stage==='tie'?'Convince the table!':c.k+' · '+(S.risk==='H'?'High':'Low')+' risk'}</span></div>
-  <button class="bigring" data-a="tgo" aria-label="${tRun?'Pause':'Start'} the timer">${ringSvg(8)}<span class="blk" role="timer">${clock}<small>${tLeft<=0?'time is up':tRun?'tap to pause':'tap to start'}</small></span></button></div>
-  <div class="focus"><div class="fctl"><button style="background:var(--sand)" data-a="treset" aria-label="Reset timer">↺ Reset</button><button class="blk" style="background:var(--dk);color:var(--bg);letter-spacing:.06em" data-a="tgo">${tRun?'PAUSE':tLeft>0&&tLeft<maxT()?'RESUME':'START'}</button><button style="background:var(--sand)" data-a="plus">+15 s</button></div>
-  ${tLeft<=0?'<button class="big blk" style="background:var(--red);color:var(--bg)" data-a="unfocus">GO TO VERDICT →</button>':''}
-  <div class="row2" style="width:100%;max-width:380px"><button class="lnk" data-a="unfocus">⚙ Round settings</button><button class="lnk" data-a="unfocus">Verdict →</button></div></div></section>`;
- }else if(S.stage==='tie'){
-  full=`<section class="card${pc}" style="--cc:${cc};--ck:${ck}">${handle}<div class="ctop"><div><span class="blk" style="font-size:12px;letter-spacing:.08em">IT'S A TIE</span><div class="who blk">Final pitch</div><span class="sub">${esc(p.name)} has 15 seconds to convince the table.</span></div>
-  <button class="ring" data-a="focus" aria-label="Open the timer">${ringSvg(10)}<span class="blk" role="timer">${clock}</span></button></div>
-  <div class="cbody"><span style="font-weight:700">Then the table votes again:</span>
-  <div class="verd3"><button class="vb blk" style="background:var(--red)" data-a="verdict" data-ok="0">FAIL<small>${dn?dn:'±0'}</small></button><button class="vb tie blk" data-a="freeze">TIE<small>freeze</small></button><button class="vb blk" style="background:var(--pu)" data-a="verdict" data-ok="1">SUCCESS<small>+${up}</small></button></div>
-  <p class="hint">Still a tie: the stock doesn't move and all bets are paid back.</p><div class="row2"><span></span><button class="undo" data-a="untie">↺ Undo</button></div></div></section>`;
- }else{
-  full=`<section class="card${pc}" style="--cc:${cc};--ck:${ck}">${handle}<div class="ctop"><div><span class="blk" style="font-size:12px;letter-spacing:.08em">ON STAGE</span><div class="who blk">${esc(p.name)}</div><span class="sub">${c.k} · ${S.risk==='H'?'High risk':'Low risk'}</span></div>
-  <button class="ring" data-a="focus" aria-label="Open the timer">${ringSvg(10)}<span class="blk" role="timer">${clock}</span></button></div>
-  <div class="cbody">
-  <div class="tokens" role="group" aria-label="Category">${CATS.map((k,i)=>`<button class="tok" style="--c:${k.c}" data-a="cat" data-i="${i}" aria-pressed="${i===S.cat}"><i></i>${k.s}</button>`).join('')}</div>
-  <div class="seg" role="group" aria-label="Risk"><button data-a="risk" data-r="L" aria-pressed="${S.risk==='L'}">Low · +1 / −1</button><button data-a="risk" data-r="H" aria-pressed="${S.risk==='H'}">High · +3 / −2</button></div>
-  <div class="mods" role="group" aria-label="Bonus and malus cards">${[['short','Short Clock'],['safety','Safety Net'],['dbl','Double Up']].map(([k,t])=>`<button class="mod" data-a="mod" data-k="${k}" aria-pressed="${m[k]}">${t}</button>`).join('')}</div>
-  <div class="ctl"><button class="go blk" data-a="focus">${tRun?'TIMER RUNNING':tLeft>0&&tLeft<maxT()?'RESUME':'START '+maxT()+' S'}</button>${m.short?'':[30,45,60,90].map(s=>`<button class="sm" data-a="sec" data-s="${s}" aria-pressed="${s===S.sec}">${s}</button>`).join('')}</div>
-  <div class="verd3" id="verd"><button class="vb blk" style="background:var(--red)" data-a="verdict" data-ok="0">FAIL<small>${dn?dn:'±0'}</small></button><button class="vb tie blk" data-a="tie">TIE<small>final pitch</small></button><button class="vb blk" style="background:var(--pu)" data-a="verdict" data-ok="1">SUCCESS<small>+${up}</small></button></div>
-  <p class="hint">Majority vote of the table. A tie gives the Performer a 15-second final pitch.</p></div></section>`;
+ let cc='#E59F48',ck='#2A110D',miniT=esc(p.name),miniS='',miniR='',full='';
+
+ if(S.stage==='card'){
+  miniS='Draw a card';miniR=p.v+' coins';
+  full=`${top('ON STAGE',esc(p.name),'Draw a challenge card and read it aloud.',`<div class="coin blk"><b>${p.v}</b><small>coins</small></div>`)}
+  <div class="cbody">${steps(0)}${flags()}
+  <span class="lbl2">Risk written on the card</span>
+  <div class="seg" role="group" aria-label="Card risk"><button data-a="risk" data-r="L" aria-pressed="${S.risk==='L'}">Easy · 45 s<br><small>${sgn(RISK.L.s[0]*(S.golden?2:1))} / ${sgn(RISK.L.s[1]*(S.golden?2:1))}</small></button><button data-a="risk" data-r="H" aria-pressed="${S.risk==='H'}">Hard · 60 s<br><small>${sgn(RISK.H.s[0]*(S.golden?2:1))} / ${sgn(RISK.H.s[1]*(S.golden?2:1))}</small></button></div>
+  <span class="lbl2">Bonus &amp; malus cards played</span>
+  <div class="mods" role="group" aria-label="Bonus and malus cards">${[['short','Short Clock'],['safety','Safety Net'],['dbl','Double Up']].map(([k,t])=>`<button class="mod" data-a="mod" data-k="${k}" aria-pressed="${S.mods[k]}">${t}</button>`).join('')}</div>
+  <button class="big blk" style="background:var(--pu);color:var(--bg)" data-a="tobets">OPEN TRADING →</button></div>`;
  }
- return mini+`<div class="full">${full}</div>`;
+
+ else if(S.stage==='bets'){
+  cc='#523A85';ck='#FBF9F4';const inv=investors(),done=inv.filter(i=>S.bets[i]).length;miniT='Trading';miniS=done+' / '+inv.length+' bets placed';miniR='';
+  if(S.betFor!==null){const i=S.betFor,q=S.players[i],t=S.tmp,max=Math.min(3,q.v);
+   full=`${top('SECRET BET',esc(q.name),'Keep the screen hidden from the others!',`<div class="coin blk"><b>${q.v}</b><small>coins</small></div>`)}
+   <div class="cbody">
+   <span class="lbl2">Will ${esc(p.name)} succeed?</span>
+   <div class="bs"><button class="bb buy" data-a="side" data-s="B" aria-pressed="${t.side==='B'}"><b class="blk">BUY</b><small>success</small></button><button class="bb sell" data-a="side" data-s="S" aria-pressed="${t.side==='S'}"><b class="blk">SELL</b><small>fail</small></button></div>
+   <span class="lbl2">Stake</span>
+   <div class="stk">${[1,2,3].map(n=>`<button class="sm blk" data-a="amt" data-n="${n}" aria-pressed="${t.amt===n}" ${n>max?'disabled':''}>${n}</button>`).join('')}</div>
+   ${jokersFree(i)>0?`<button class="jkb" data-a="joker" aria-pressed="${t.side==='J'}">I drew a Joker card: no bet this time</button><p class="hint" style="text-align:center">Show your Joker card to the table!</p>`:''}
+   <button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="place" ${(t.side==='J'||(t.side&&t.amt))?'':'disabled'}>PLACE MY BET</button>
+   <div class="row2"><span></span><button class="lnk" data-a="betcancel">Cancel</button></div></div>`;
+  }else{
+   full=`${top('TRADING','Place your bets','Pass the phone. Each investor taps their name and bets in secret.')}
+   <div class="cbody">${steps(1)}${flags()}
+   <div class="invl">${inv.map(i=>{const q=S.players[i],b=S.bets[i];return`<button class="inv" data-a="betopen" data-i="${i}" ${b&&b.side==='N'?'disabled':''}><span class="dot" style="background:${q.c}"></span><span class="nm2">${esc(q.name)}<small>${q.v} coins</small></span><span class="stt ${b?'ok':''}">${b?(b.side==='N'?'No coins':'✓ Bet placed'):'Tap to bet'}</span></button>`}).join('')}</div>
+   <button class="big blk" style="background:var(--red);color:var(--bg)" data-a="validate" ${done<inv.length?'disabled':''}>VALIDATE BETS (${done}/${inv.length})</button>
+   <div class="row2"><button class="lnk" data-a="tocard">← Back to the card</button><span></span></div></div>`;
+  }
+ }
+
+ else if(S.stage==='perf'||S.stage==='tie'){
+  const tie=S.stage==='tie';cc=tie?'#F07A5C':p.c;ck=tie?'#2A110D':p.k;miniT=tie?'Final pitch':esc(p.name);miniS=tie?'15 seconds to convince':'Challenge running';miniR=tLeft>0?fmt(tLeft):'TIME!';
+  full=`<div class="ctop" style="flex-direction:column;align-items:center;text-align:center;gap:14px;padding:26px 18px 22px"><div><span class="blk" style="font-size:12px;letter-spacing:.08em">${tie?'IT’S A TIE · FINAL PITCH':'PERFORMANCE · '+r.n.toUpperCase()+' CARD'}</span><div class="who blk">${esc(p.name)}</div><span class="sub">${tie?'Convince the table in 15 seconds!':'Investors, start the clock!'}</span></div>
+  <button class="bigring" data-a="tgo" aria-label="${tRun?'Pause':'Start'} the timer">${ringSvg(8)}<span class="blk" role="timer">${tLeft>0?fmt(tLeft):'TIME!'}<small>${tLeft<=0?'time is up':tRun?'tap to pause':'tap to start'}</small></span></button></div>
+  <div class="focus">${tie?'':steps(2)}<div class="fctl"><button style="background:var(--sand)" data-a="treset">↺ Reset</button><button class="blk" style="background:var(--dk);color:var(--bg);letter-spacing:.06em" data-a="tgo">${tRun?'PAUSE':tLeft>0&&tLeft<maxT()?'RESUME':'START'}</button><button style="background:var(--sand)" data-a="plus">+15 s</button></div>
+  <button class="big blk" style="background:${tLeft<=0?'var(--red)':'var(--sand)'};color:${tLeft<=0?'var(--bg)':'var(--dk)'}" data-a="toverdict">${tie?'VOTE AGAIN →':'GO TO VERDICT →'}</button></div>`;
+ }
+
+ else if(S.stage==='verdict'){
+  cc='#2A110D';ck='#FBF9F4';miniT='Verdict';miniS='The table debates';
+  const again=S.tieDone;
+  full=`${top(again?'SECOND VOTE':'VERDICT','The table debates',again?'Still a tie means the market freezes.':'Then vote by majority. Justify your vote in English!')}
+  <div class="cbody">${steps(3)}
+  <div class="verd3"><button class="vb blk" style="background:var(--red)" data-a="verdict" data-v="F">FAIL<small>${esc(p.name)} ${sgn(dn)}</small></button><button class="vb tie blk" data-a="${again?'freeze':'tie'}">TIE<small>${again?'freeze':'final pitch'}</small></button><button class="vb blk" style="background:var(--pu)" data-a="verdict" data-v="S">SUCCESS<small>${esc(p.name)} ${sgn(up)}</small></button></div>
+  <p class="hint">${again?'Still a tie: nobody wins or loses coins, all bets are paid back.':'A tie gives the Performer a 15-second final pitch.'}</p>
+  <div class="row2"><button class="lnk" data-a="toperf">← Back to the clock</button><span></span></div></div>`;
+ }
+
+ else if(S.stage==='settle'||S.stage==='done'){
+  const v=S.verdict,done=S.stage==='done',D=done?S.applied:deltas();
+  cc=v==='Z'?'#F1E8DA':v==='S'?'#523A85':'#D95536';ck=v==='Z'?'#2A110D':'#FBF9F4';
+  const title=v==='Z'?'Market freeze':v==='S'?'Success':'Fail';miniT=title;miniS=done?'Turn complete':'Check the results';
+  const rows=S.players.map((q,i)=>{const d=D[i],on=done||S.on[i]!==false,app=on?d:0;return`<div class="sr ${on?'':'off'}"><span class="dot" style="background:${q.c}"></span><span class="nm2">${esc(q.name)}<small>${betLabel(i)}</small></span><b class="blk dl ${app>0?'pos':app<0?'neg':''}">${sgn(app)}</b>${done?`<span class="blk tot">${q.v}</span>`:`<button class="tg" data-a="toggle" data-i="${i}" aria-pressed="${on}" aria-label="Apply the result of ${esc(q.name)}" ${d===0?'disabled':''}>${on?'✓':''}</button>`}</div>`}).join('');
+  full=`${top(done?'TURN COMPLETE':'SETTLEMENT',title,done?'Everyone’s coins are updated.':'Check each result, untick a line to cancel it, then confirm.')}
+  <div class="cbody">${done?'':steps(4)}${v==='Z'?'<p class="hint" style="color:var(--dk);font-size:15px">Still a tie: all bets are paid back.</p>':''}
+  <div class="srs">${rows}</div>
+  ${done?`<button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="next">NEXT PERFORMER →</button><div class="row2"><span></span><button class="undo" data-a="undo">↺ Undo</button></div>`
+  :`<button class="big blk" style="background:var(--red);color:var(--bg)" data-a="confirm">CONFIRM RESULTS</button><div class="row2">${v==='Z'?'<span></span>':'<button class="lnk" data-a="appeal">Appeal won: flip the verdict</button>'}<button class="undo" data-a="toverdict">↺ Back to verdict</button></div>`}</div>`;
+ }
+ const mini=`<button class="mini" style="--cc:${cc};--ck:${ck}" data-a="sheetopen" data-sw="1" aria-label="Open the On stage panel"><span class="mt"><span>ON STAGE · ${esc(p.name)}</span><b class="blk">${miniT}</b><span>${miniS}</span></span><span class="mclock blk">${miniR}</span><span aria-hidden="true" style="font-size:20px">▲</span></button>`;
+ return mini+`<div class="full"><section class="card${pc}" style="--cc:${cc};--ck:${ck}">${handle}${full}</section></div>`;
 }
 
+/* ================= END ================= */
 function endScreen(){
- const rows=S.players.map(p=>{const c=+S.coins[p.tk]||0;return{...p,f:c+p.v*2}}).sort((a,b)=>b.f-a.f);
- const filled=Object.values(S.coins).some(v=>+v>0),pod=[rows[1],rows[0],rows[2]],H=[150,190,130];
+ const rows=S.players.map(p=>({...p})).sort((a,b)=>b.v-a.v),pod=[rows[1],rows[0],rows[2]],H=[150,190,130];
  return `<section style="display:flex;flex-direction:column;gap:18px;max-width:900px;margin:0 auto;width:100%">
- <div class="hero"><svg width="80" height="100" aria-hidden="true"><use href="#wolf"/></svg><div><span class="hint">${filled?'The Wolf of Work Street is':'Final settlement'}</span><h1 class="blk" style="font-size:clamp(30px,6vw,48px)">${filled?esc(rows[0].name):'Count your coins'}</h1></div></div>
- ${filled?`<div class="podium">${pod.map((p,i)=>p?`<div class="pod" style="--c:${p.c};--k:${p.k};height:${H[i]}px"><span>${esc(p.name)}</span><b class="blk">${p.f}</b><small style="font-weight:700">${i===1?'1st':i===0?'2nd':'3rd'}</small></div>`:'<div></div>').join('')}</div>`:''}
- <p class="hint">Type the Soft Coins each player has on the table. Fortune = coins + stock × 2.</p>
- <div class="coins">${rows.map(p=>`<div class="cn"><span style="width:14px;height:40px;border-radius:7px;background:${p.c};flex:none"></span><span class="nm">${esc(p.name)}<small>stock ${p.v} × 2</small></span><input type="number" min="0" inputmode="numeric" value="${S.coins[p.tk]??''}" placeholder="0" data-c="${esc(p.tk)}" aria-label="Soft Coins of ${esc(p.name)}"><b class="f blk">${p.f}</b></div>`).join('')}</div>
+ <div class="hero"><svg width="80" height="124" aria-hidden="true"><use href="#wolf"/></svg><div><span class="hint">The Wolf of Work Street is</span><h1 class="blk" style="margin:0;font-size:clamp(30px,6vw,48px)">${esc(rows[0].name)}</h1></div></div>
+ <div class="podium">${pod.map((p,i)=>p?`<div class="pod" style="--c:${p.c};--k:${p.k};height:${H[i]}px"><span>${esc(p.name)}</span><b class="blk">${p.v}</b><small style="font-weight:700">${i===1?'1st':i===0?'2nd':'3rd'} · coins</small></div>`:'<div></div>').join('')}</div>
+ <p class="hint">Check with the coins on the table. If something is different, trust the table and tell the group!</p>
+ <div class="coins">${rows.map((p,i)=>`<div class="cn"><span style="width:14px;height:40px;border-radius:7px;background:${p.c};flex:none"></span><span class="nm">${i+1}. ${esc(p.name)}<small>${p.v} Soft Coins</small></span><b class="f blk">${p.v}</b></div>`).join('')}</div>
  <button class="big blk" style="background:var(--or)" data-a="new">NEW GAME</button></section>`;
 }
 
+/* ================= RENDER ================= */
 function render(){
  pills();const a=$('app');
  if(S.phase==='setup')a.innerHTML=setup();
@@ -364,21 +459,22 @@ function render(){
  else{a.innerHTML=`<div class="main"><div id="stageCol" class="${S.sheet?'open':''}">${stage()}</div>${market()}</div><div id="scrim" class="${S.sheet&&phone()?'on':''}" data-a="sheetclose"></div>`;drawChart()}
  save();
 }
-function paintStage(){const col=$('stageCol');if(!col)return;col.innerHTML=stage(true);col.classList.toggle('open',!!S.sheet);const sc=$('scrim');if(sc)sc.classList.toggle('on',!!S.sheet&&phone())}
+function paintStage(anim){const col=$('stageCol');if(!col)return;col.innerHTML=stage(!anim);col.classList.toggle('open',!!S.sheet);const sc=$('scrim');if(sc)sc.classList.toggle('on',!!S.sheet&&phone());save()}
 
 let ro;
 function drawChart(){
  const s=$('chart');if(!s)return;
- const W=s.clientWidth,H=s.clientHeight,n=S.hist.length,pad={l:22,r:46,t:10,b:18};
- const x=i=>pad.l+(n<2?0:i*(W-pad.l-pad.r)/(n-1)),y=v=>pad.t+(20-v)*(H-pad.t-pad.b)/20;
- let g='';[0,10,20].forEach(v=>{g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="#FBF9F4" stroke-opacity=".18"/><text x="${pad.l-6}" y="${y(v)+4}" fill="#FBF9F4" fill-opacity=".7" font-size="11" text-anchor="end" font-family="Archivo" font-weight="700">${v}</text>`});
+ const W=s.clientWidth,H=s.clientHeight,n=S.hist.length,pad={l:24,r:46,t:10,b:18};
+ const mx=Math.max(20,Math.ceil(Math.max(...S.hist.flatMap(h=>h.v))/5)*5);
+ const x=i=>pad.l+(n<2?0:i*(W-pad.l-pad.r)/(n-1)),y=v=>pad.t+(mx-v)*(H-pad.t-pad.b)/mx;
+ let g='';[0,mx/2,mx].forEach(v=>{g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="#FBF9F4" stroke-opacity=".18"/><text x="${pad.l-6}" y="${y(v)+4}" fill="#FBF9F4" fill-opacity=".7" font-size="11" text-anchor="end" font-family="Archivo" font-weight="700">${v}</text>`});
  S.hist.forEach((h,i)=>{if(h.l==='news')g+=`<circle cx="${x(i)}" cy="${H-pad.b+8}" r="4" fill="#E59F48"/>`});
  const many=S.players.length>8,labels=[];
- S.players.forEach((p,j)=>{const on=j===S.cur,pts=S.hist.map((h,i)=>x(i).toFixed(1)+','+y(h.v[j]).toFixed(1)).join(' ');
-  if(on)return;g+=`<polyline points="${pts}" fill="none" stroke="${LINE[j%8]}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" opacity="${many?.35:.75}"/>`;labels.push({y:y(S.hist[n-1].v[j]),c:LINE[j%8],t:p.tk})});
+ S.players.forEach((p,j)=>{if(j===S.cur)return;const pts=S.hist.map((h,i)=>x(i).toFixed(1)+','+y(h.v[j]).toFixed(1)).join(' ');
+  g+=`<polyline points="${pts}" fill="none" stroke="${LINE[j%8]}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" opacity="${many?.35:.75}"/>`;labels.push({y:y(S.hist[n-1].v[j]),c:LINE[j%8],t:p.tk})});
  const cp=S.players[S.cur],cj=S.cur,cpts=S.hist.map((h,i)=>x(i).toFixed(1)+','+y(h.v[cj]).toFixed(1)).join(' ');
  g+=`<polyline points="${cpts}" fill="none" stroke="#FBF9F4" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${x(n-1)}" cy="${y(S.hist[n-1].v[cj])}" r="6" fill="#E59F48" stroke="#FBF9F4" stroke-width="3"/>`;
- labels.push({y:y(S.hist[n-1].v[cj]),c:'#FBF9F4',t:cp.tk,on:1});
+ labels.push({y:y(S.hist[n-1].v[cj]),c:'#FBF9F4',t:cp.tk});
  labels.sort((a,b)=>a.y-b.y);let last=-99;
  if(!many)labels.forEach(l=>{const yy=Math.max(l.y+4,last+12);last=yy;g+=`<text x="${W-pad.r+8}" y="${yy}" fill="${l.c}" font-size="11" font-family="Archivo Black">${esc(l.t)}</text>`});
  else g+=`<text x="${W-pad.r+8}" y="${y(S.hist[n-1].v[cj])+4}" fill="#FBF9F4" font-size="11" font-family="Archivo Black">${esc(cp.tk)}</text>`;
@@ -386,6 +482,7 @@ function drawChart(){
  if(!ro)ro=new ResizeObserver(()=>drawChart());ro.disconnect();ro.observe(s);
 }
 
+/* ================= TIMER ================= */
 function tick(){
  if(!tRun)return;tLeft--;
  if(tLeft<=5&&tLeft>0)beep(880,.12);
@@ -393,73 +490,101 @@ function tick(){
  paintStage();
 }
 function resetTimer(){tRun=false;clearInterval(tInt);tLeft=maxT()}
-function applyVerdict(ok,from){const p=S.players[S.cur],st=STAKE[S.risk];let d=ok?st[0]:(S.mods.safety?0:st[1]);if(S.mods.dbl)d*=2;p.v=clamp(from+d);return p.v-from}
+function startTimer(){if(tLeft<=0)resetTimer();tRun=true;clearInterval(tInt);beep(660,.08);tInt=setInterval(tick,1000)}
 
+/* ================= TURN FLOW ================= */
+function newTurn(){S.stage='card';S.bets={};S.betFor=null;S.tmp={};S.verdict=null;S.on={};S.tieDone=false;S.prevV=null;S.jokersSpent=false;S.mods={short:false,safety:false,dbl:false};S.risk='L';resetTimer()}
+function confirmResults(){
+ const D=deltas();S.prevV=S.players.map(p=>p.v);S.prevJ=S.jokersLeft;
+ S.players.forEach((p,i)=>{if(S.on[i]!==false)p.v=Math.max(0,p.v+D[i])});
+ if(!S.jokersSpent)S.jokersLeft=Math.max(0,S.jokersLeft-Object.values(S.bets).filter(b=>b.side==='J').length);S.jokersSpent=true;
+ S.applied={};S.players.forEach((p,i)=>S.applied[i]=p.v-S.prevV[i]);S.wasGolden=S.golden;snap('turn');S.stage='done';S.sheet=true;beep(S.verdict==='S'?990:S.verdict==='F'?220:330,.25);
+ if(S.golden)S.golden=false;
+}
+function checkBroke(){const out=S.players.filter(p=>p.v<=0);if(!out.length)return false;
+ $('modal').innerHTML=`<div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="bk"><div class="card news pop" style="--cc:#D95536;--ck:#FBF9F4"><div class="ctop"><span class="blk" style="font-size:12px;letter-spacing:.08em">GAME OVER</span><h3 class="blk" id="bk">${esc(out.map(p=>p.name).join(', '))} ${out.length>1?'have':'has'} no coins left!</h3></div><div class="cbody"><p>The rules say the game ends now.</p><button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="end">SEE THE RESULTS</button><button class="lnk" data-a="alertok">Undo first</button></div></div></div>`;return true}
+
+/* ================= CLICKS ================= */
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a,i=+b.dataset.i;
  if(a==='install'&&deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.finally(()=>{deferredPrompt=null;render()});return}
+ /* setup */
  if(a==='add'){S.names.push('');render();const ins=document.querySelectorAll('#names input');ins[ins.length-1].focus();return}
- if(a==='rm')S.names.splice(i,1);
- if(a==='gm')S.gameMin=Math.max(10,Math.min(120,S.gameMin+ +b.dataset.d));
+ if(a==='rm'){S.names.splice(i,1);render();return}
+ if(a==='gm'){S.gameMin=Math.max(10,Math.min(120,S.gameMin+ +b.dataset.d));render();return}
  if(a==='start'){const names=S.names.map(n=>n.trim()).filter(Boolean);if(names.length<4){alertBox('You need at least 4 players.');return}S.phase='rules';S.slide=0;render();scrollTo(0,0);return}
+ /* rules */
  if(a==='no'){S.phase='setup';S.slide=0;render();scrollTo(0,0);return}
  if(a==='skip'){goSlide(SLIDES.length,true);return}
  if(a==='prev'){goSlide(S.slide-1,true);return}
  if(a==='nextslide'){goSlide(S.slide+1,true);return}
- if(a==='sheetopen'){S.sheet=true;paintStage();save();return}
- if(a==='sheetclose'){S.sheet=false;paintStage();save();return}
- if(a==='endask'){$('modal').innerHTML=`<div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="eq"><div class="card news pop" style="--cc:#2A110D;--ck:#FBF9F4"><div class="ctop"><span class="blk" style="font-size:12px;letter-spacing:.08em">END GAME</span><h3 class="blk" id="eq">End the game now?</h3></div><div class="cbody"><p>You will go to the final settlement. You can still come back to the game.</p><div class="two" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="big blk" style="background:var(--sand)" data-a="alertok">NO</button><button class="big blk" style="background:var(--red);color:var(--bg)" data-a="end">YES</button></div></div></div></div>`;return}
- if(a==='focus'){S.focus=true;S.sheet=true;if(!tRun&&tLeft>0){tRun=true;clearInterval(tInt);beep(660,.08);tInt=setInterval(tick,1000)}paintStage();save();return}
- if(a==='unfocus'){S.focus=false;paintStage();save();const v=$('verd');v&&v.scrollIntoView({block:'nearest'});return}
+ if(a==='yes'){const names=S.names.map(n=>n.trim()).filter(Boolean),used={};
+  S.players=names.map((n,j)=>{let tk=n.replace(/[^A-Za-z]/g,'').slice(0,3).toUpperCase()||'P'+(j+1);while(used[tk])tk=tk.slice(0,2)+(j+1);used[tk]=1;return{name:n,tk,v:10,c:COLS[j%6][0],k:COLS[j%6][1]}});
+  Object.assign(S,{phase:'play',hist:[],turn:0,cur:0,crash:false,golden:false,lastNews:-1,jokersLeft:2,sheet:true,slide:0,gameEnd:Date.now()+S.gameMin*60000});newTurn();snap('start');bellRung=false;render();scrollTo(0,0);keepAwake();return}
+ /* sheet */
+ if(a==='sheetopen'){S.sheet=true;paintStage(true);return}
+ if(a==='sheetclose'){S.sheet=false;paintStage();return}
+ if(a==='pick'){if(S.stage==='card'){S.cur=i;S.sheet=true;render()}else{S.sheet=true;paintStage()}return}
+ /* card */
+ if(a==='risk'){S.risk=b.dataset.r;resetTimer();paintStage();return}
+ if(a==='mod'){S.mods[b.dataset.k]=!S.mods[b.dataset.k];resetTimer();paintStage();return}
+ if(a==='tobets'){S.stage='bets';S.betFor=null;S.players.forEach((q,k)=>{if(k!==S.cur&&q.v<=0)S.bets[k]={side:'N',amt:0}});paintStage(true);return}
+ /* bets */
+ if(a==='tocard'){S.stage='card';S.bets={};paintStage(true);return}
+ if(a==='betopen'){S.betFor=i;S.tmp={};paintStage(true);return}
+ if(a==='betcancel'){S.betFor=null;S.tmp={};paintStage(true);return}
+ if(a==='side'){S.tmp.side=b.dataset.s;if(!S.tmp.amt)S.tmp.amt=null;paintStage();return}
+ if(a==='amt'){S.tmp.amt=+b.dataset.n;if(S.tmp.side==='J')S.tmp.side=null;paintStage();return}
+ if(a==='joker'){S.tmp={side:'J',amt:0};paintStage();return}
+ if(a==='place'){S.bets[S.betFor]=S.tmp.side==='J'?{side:'J',amt:0}:{side:S.tmp.side,amt:S.tmp.amt};S.betFor=null;S.tmp={};beep(700,.08);paintStage(true);return}
+ if(a==='validate'){S.stage='perf';resetTimer();paintStage(true);return}
+ /* clock */
+ if(a==='tgo'){if(tRun){tRun=false;clearInterval(tInt)}else startTimer();paintStage();return}
+ if(a==='treset'){resetTimer();paintStage();return}
  if(a==='plus'){tLeft+=15;paintStage();return}
- if(a==='tie'){resetTimer();S.stage='tie';S.focus=false;resetTimer();paintStage();save();return}
- if(a==='untie'){S.stage='pick';S.focus=false;resetTimer();paintStage();save();return}
- if(a==='freeze'){resetTimer();const p=S.players[S.cur];S.last={ok:null,d:0,prev:p.v,freeze:true};S.stage='done';S.focus=false;S.sheet=true;snap('turn');beep(330,.3)}
- if(a==='yes'){const names=S.names.map(n=>n.trim()).filter(Boolean);
-  const used={};S.players=names.map((n,j)=>{let tk=n.replace(/[^A-Za-z]/g,'').slice(0,3).toUpperCase()||'P'+(j+1);while(used[tk])tk=tk.slice(0,2)+(j+1);used[tk]=1;return{name:n,tk,v:10,c:COLS[j%6][0],k:COLS[j%6][1]}});
-  Object.assign(S,{phase:'play',hist:[],turn:0,cur:0,cat:0,risk:'L',sec:45,stage:'pick',coins:{},sheet:true,focus:false,slide:0,gameEnd:Date.now()+S.gameMin*60000,mods:{short:false,safety:false,dbl:false}});snap('start');resetTimer();scrollTo(0,0)}
- if(a==='pick'&&S.stage==='pick'){S.cur=i;S.focus=false;S.sheet=true;resetTimer()}
- if(a==='cat')S.cat=i;
- if(a==='risk'){S.risk=b.dataset.r;S.sec=S.risk==='H'?60:45;resetTimer()}
- if(a==='mod'){S.mods[b.dataset.k]=!S.mods[b.dataset.k];if(b.dataset.k==='short')resetTimer()}
- if(a==='sec'){S.sec=+b.dataset.s;resetTimer()}
- if(a==='tgo'){if(tLeft<=0)resetTimer();tRun=!tRun;clearInterval(tInt);if(tRun){beep(660,.08);tInt=setInterval(tick,1000)};paintStage();return}
- if(a==='treset')resetTimer();
- if(a==='verdict'){resetTimer();const ok=b.dataset.ok==='1',p=S.players[S.cur],prev=p.v,d=applyVerdict(ok,prev);S.last={ok,d,prev};S.stage='done';S.focus=false;S.sheet=true;snap('turn');beep(ok?990:220,.25)}
- if(a==='appeal'&&S.last&&!S.last.freeze){const L=S.last;L.ok=!L.ok;L.d=applyVerdict(L.ok,L.prev);S.hist[S.hist.length-1].v[S.cur]=S.players[S.cur].v}
- if(a==='undo'&&S.last){S.players[S.cur].v=S.last.prev;S.hist.pop();S.stage='pick';S.last=null;resetTimer()}
- if(a==='next'){S.turn++;S.last=null;S.stage='pick';S.mods={short:false,safety:false,dbl:false};S.risk='L';S.sec=45;S.focus=false;S.cur=(S.cur+1)%S.players.length;resetTimer();if(S.cur===0){render();drawNews();return}}
- if(a==='newsok'){$('modal').innerHTML=''}
- if(a==='alertok'){$('modal').innerHTML='';return}
- if(a==='end'){tRun=false;clearInterval(tInt);S.phase='end';$('modal').innerHTML='';scrollTo(0,0)}
- if(a==='back')S.phase='play';
- if(a==='new')S={...fresh(),names:S.players.map(p=>p.name),gameMin:S.gameMin};
- render();
- if(S.phase==='play')keepAwake();else letSleep();
+ if(a==='toverdict'){tRun=false;clearInterval(tInt);if(S.stage==='tie')S.tieDone=true;S.stage='verdict';S.verdict=null;S.on={};paintStage(true);return}
+ if(a==='toperf'){S.stage=S.tieDone?'tie':'perf';paintStage(true);return}
+ /* verdict */
+ if(a==='verdict'){S.verdict=b.dataset.v;S.on={};S.stage='settle';beep(b.dataset.v==='S'?990:220,.2);paintStage(true);return}
+ if(a==='tie'){S.stage='tie';resetTimer();paintStage(true);return}
+ if(a==='freeze'){S.verdict='Z';S.on={};S.stage='settle';beep(330,.3);paintStage(true);return}
+ /* settlement */
+ if(a==='toggle'){S.on[i]=S.on[i]===false;paintStage();return}
+ if(a==='appeal'){S.verdict=S.verdict==='S'?'F':'S';paintStage();return}
+ if(a==='confirm'){confirmResults();render();checkBroke();return}
+ if(a==='undo'){if(S.prevV){S.players.forEach((p,k)=>{p.v=S.prevV[k]});S.jokersSpent=true;S.hist.pop();S.golden=S.wasGolden||false}S.stage='settle';render();return}
+ if(a==='next'){S.turn++;S.cur=(S.cur+1)%S.players.length;const wrap=S.cur===0;newTurn();S.sheet=true;render();if(wrap)drawNews();return}
+ /* modals & end */
+ if(a==='newsok'||a==='alertok'){$('modal').innerHTML='';if(a==='newsok')checkBroke();return}
+ if(a==='endask'){$('modal').innerHTML=`<div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="eq"><div class="card news pop" style="--cc:#2A110D;--ck:#FBF9F4"><div class="ctop"><span class="blk" style="font-size:12px;letter-spacing:.08em">END GAME</span><h3 class="blk" id="eq">End the game now?</h3></div><div class="cbody"><p>You will see the final ranking. You can still come back to the game.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="big blk" style="background:var(--sand)" data-a="alertok">NO</button><button class="big blk" style="background:var(--red);color:var(--bg)" data-a="end">YES</button></div></div></div></div>`;return}
+ if(a==='end'){tRun=false;clearInterval(tInt);S.phase='end';$('modal').innerHTML='';render();letSleep();scrollTo(0,0);return}
+ if(a==='back'){S.phase='play';render();keepAwake();return}
+ if(a==='new'){S={...fresh(),names:S.players.map(p=>p.name),gameMin:S.gameMin};render();return}
 });
-document.addEventListener('input',e=>{
- const t=e.target;
- if(t.dataset.n!==undefined){S.names[+t.dataset.n]=t.value;save()}
- if(t.dataset.c!==undefined){S.coins[t.dataset.c]=t.value;const id=t.dataset.c;render();const n=document.querySelector(`[data-c="${CSS.escape(id)}"]`);if(n){n.focus();const v=n.value;n.value='';n.value=v}}
-});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset.n!==undefined){S.names[+t.dataset.n]=t.value;save()}});
+
+/* ================= MARKET NEWS ================= */
 function drawNews(){
- const k=Math.floor(Math.random()*NEWS.length),N=NEWS[k],eff=N.f(S.players);S.players.forEach(p=>p.v=clamp(p.v));snap('news');
+ S.crash=false; // a crash lasts one round only
+ let k;do{k=rnd(NEWS.length)}while(k===S.lastNews&&NEWS.length>1);S.lastNews=k;
+ const N=NEWS[k];S.wasGolden=false;const eff=N.f(S.players);S.players.forEach(p=>p.v=Math.max(0,p.v));snap('news');
  const c=NC[k%4];
- $('modal').innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-labelledby="nt"><div class="card news pop" style="--cc:${c};--ck:${c==='#E59F48'?'#2A110D':'#FBF9F4'}"><div class="ctop"><span class="blk" style="font-size:12px;letter-spacing:.08em">MARKET NEWS · END OF ROUND ${round()-1}</span><h3 class="blk" id="nt">${N.t}</h3></div><div class="cbody"><p>${N.d}</p><div class="eff">${esc(eff)}</div><button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="newsok">BACK TO TRADING</button></div></div></div>`;
- render();beep(523,.15);setTimeout(()=>beep(784,.25),160);
+ $('modal').innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-labelledby="nt"><div class="card news pop" style="--cc:${c};--ck:${c==='#E59F48'?'#2A110D':'#FBF9F4'}"><div class="ctop"><span class="blk" style="font-size:12px;letter-spacing:.08em">MARKET NEWS · END OF ROUND ${round()-1}</span><h3 class="blk" id="nt">${N.t}</h3></div><div class="cbody"><p>${N.d}</p><div class="eff">${esc(eff)}</div><p class="hint">Imposed by the market: apply it on the table too.</p><button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="newsok">BACK TO TRADING</button></div></div></div>`;
+ render();howl();
  const btn=document.querySelector('[data-a=newsok]');btn&&btn.focus();
 }
 function alertBox(msg){$('modal').innerHTML=`<div class="modal" role="alertdialog" aria-modal="true"><div class="card news pop" style="--cc:#D95536;--ck:#FBF9F4"><div class="ctop"><h3 class="blk">Wait!</h3></div><div class="cbody"><p>${esc(msg)}</p><button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="alertok">OK</button></div></div></div>`}
 
+/* ================= GESTURES, KEYS, CLOCK ================= */
 let ty=null;
 document.addEventListener('touchstart',e=>{const t=e.target.closest('[data-sw]');ty=t?e.touches[0].clientY:null},{passive:true});
-document.addEventListener('touchend',e=>{if(ty===null)return;const dy=e.changedTouches[0].clientY-ty;ty=null;if(Math.abs(dy)<40)return;S.sheet=dy<0;paintStage();save()},{passive:true});
+document.addEventListener('touchend',e=>{if(ty===null)return;const dy=e.changedTouches[0].clientY-ty;ty=null;if(Math.abs(dy)<40)return;S.sheet=dy<0;paintStage()},{passive:true});
 document.addEventListener('keydown',e=>{if(S.phase==='rules'&&(e.key==='ArrowRight'||e.key==='ArrowLeft')&&!e.target.closest('input')){goSlide(S.slide+(e.key==='ArrowRight'?1:-1),true)}
- if(e.key==='Escape'&&S.phase==='play'&&S.sheet&&phone()){S.sheet=false;paintStage();save()}});
+ if(e.key==='Escape'&&S.phase==='play'&&S.sheet&&phone()){S.sheet=false;paintStage()}});
 addEventListener('resize',()=>{const sc=$('scrim');if(sc)sc.classList.toggle('on',!!S.sheet&&phone());if(S.phase==='rules')goSlide(S.slide,false)});
 let bellRung=false;
 setInterval(()=>{if(S.phase!=='play'&&S.phase!=='end')return;const g=$('gclock');if(!g)return;const left=Math.round((S.gameEnd-Date.now())/1000);
- if(left<=0){if(!bellRung){bellRung=true;beep(392,.4);setTimeout(()=>beep(392,.6),450);pills()}}else g.querySelector('b').textContent=fmt(left)},1000);
+ if(left<=0){if(!bellRung){bellRung=true;howl();pills()}}else g.querySelector('b').textContent=fmt(left)},1000);
 if(S.phase==='play')resetTimer();
 render();
 }
