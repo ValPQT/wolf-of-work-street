@@ -1,7 +1,7 @@
 // Service worker: keeps the app working offline.
 // When you change a file, change the version number below (v1 -> v2...)
 // so that phones download the new version.
-const CACHE = 'wows-v11';
+const CACHE = 'wows-v14';
 const FILES = [
   './',
   './index.html',
