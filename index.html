@@ -159,6 +159,59 @@ header{position:sticky;top:0;z-index:6;background:var(--bg);padding:8px 0;margin
 .tot{font-size:20px;min-width:34px;text-align:right}
 .tile .jk{align-self:flex-start;margin-top:6px;font-size:10px;font-weight:700;border:1.5px solid currentColor;border-radius:999px;padding:1px 7px;opacity:.85}.tile .jk.used{text-decoration:line-through;opacity:.4}
 .tile .d{display:inline-block;margin-bottom:2px}
+
+/* ===== animations (all switched off by prefers-reduced-motion) ===== */
+.howl{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:radial-gradient(circle at 50% 42%,#4A2418 0%,#2A110D 62%);cursor:pointer;overflow:hidden}
+.howl svg.scene{width:min(78vw,360px);height:auto;overflow:visible}
+.howl .aw{font-family:'Archivo Black','Archivo',sans-serif;color:#FBF9F4;font-size:clamp(34px,10vw,58px);letter-spacing:.02em;line-height:1;display:flex}
+.howl .aw span{display:inline-block}
+.howl .aw span:nth-child(n+2){color:#E59F48}.howl .aw span:last-child{color:#D95536}
+.howl .lab{font-family:'Archivo Black';font-size:12px;letter-spacing:.14em;color:#E59F48;margin-top:10px}
+.howl .skiph{position:absolute;bottom:max(18px,env(safe-area-inset-bottom));font-size:12px;font-weight:700;color:#CDBFB0}
+.fxlayer{position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden}
+.fxchip{position:absolute;top:-40px;width:28px;height:28px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 3px var(--c),inset 0 0 0 6px rgba(251,249,244,.85);border:2px dashed rgba(42,17,13,.35)}
+.float{position:absolute;font-family:'Archivo Black';font-size:30px;pointer-events:none;z-index:41;text-shadow:0 2px 0 rgba(42,17,13,.25);transform:translate(-50%,0)}
+.float.pos{color:#523A85}.float.neg{color:#D95536}
+button:not([disabled]):active{transform:scale(.96)}
+@media(prefers-reduced-motion:no-preference){
+ button,.tile,.tok i,.bb,.vb,.inv,.sr{transition:transform .15s,background-color .2s,box-shadow .2s}
+ .vb:hover,.bb:hover,.inv:hover{transform:translateY(-2px)}
+ .howl{animation:hfade .35s ease-out}
+ @keyframes hfade{from{opacity:0}}
+ .howl .moon{transform-origin:150px 150px;animation:moon 2.8s ease-out both}
+ @keyframes moon{0%{transform:scale(.4);opacity:0}25%{transform:scale(1.04);opacity:1}100%{transform:scale(1)}}
+ .howl .ring{transform-origin:150px 150px;animation:spin 6s linear infinite}
+ @keyframes spin{to{transform:rotate(360deg)}}
+ .howl .wolfg{transform-origin:150px 290px;animation:lift 2.8s cubic-bezier(.3,.7,.3,1) both}
+ @keyframes lift{0%{transform:translateY(60px) scale(.9);opacity:0}18%{transform:translateY(0) scale(1);opacity:1}32%{transform:translateY(-14px) scaleY(.94) rotate(0)}50%{transform:translateY(-16px) scaleY(.93) rotate(-3deg)}68%{transform:translateY(-16px) scaleY(.93) rotate(3deg)}86%{transform:translateY(-12px) scaleY(.95) rotate(-1deg)}100%{transform:translateY(-10px) scaleY(.96)}}
+ .howl .wave{transform-origin:150px 96px;opacity:0;animation:wave 1.4s ease-out infinite;animation-delay:.5s}
+ .howl .wave.w2{animation-delay:.95s}.howl .wave.w3{animation-delay:1.4s}
+ @keyframes wave{0%{transform:scale(.4) translateY(10px);opacity:0}25%{opacity:1}100%{transform:scale(1.5) translateY(-38px);opacity:0}}
+ .howl .star{animation:twk 1.6s ease-in-out infinite alternate}.howl .star:nth-of-type(2n){animation-delay:.6s}
+ @keyframes twk{from{opacity:.25}to{opacity:1}}
+ .howl .aw span{animation:awo 1s ease-in-out infinite;animation-delay:calc(var(--i)*.08s + .5s)}
+ @keyframes awo{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+ .howl.out{animation:hout .35s ease-in forwards}@keyframes hout{to{opacity:0;transform:scale(1.06)}}
+ .fxchip{animation:fall var(--d) cubic-bezier(.3,.6,.4,1) forwards}
+ @keyframes fall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--x),110vh) rotate(var(--r))}}
+ .float{animation:flt 1.3s ease-out forwards}@keyframes flt{0%{transform:translate(-50%,0) scale(.5);opacity:0}20%{transform:translate(-50%,-10px) scale(1.15);opacity:1}100%{transform:translate(-50%,-70px) scale(1);opacity:0}}
+ .tile.bump-up{animation:bup .7s ease-out}.tile.bump-down{animation:bdn .6s ease-out}
+ @keyframes bup{0%{transform:scale(1)}30%{transform:scale(1.07);box-shadow:0 0 0 6px #A892E0}100%{transform:scale(1)}}
+ @keyframes bdn{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px);box-shadow:0 0 0 6px #F07A5C}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+ .shake{animation:shk .5s ease-in-out}@keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+ .jelly{animation:jly .6s ease-out}@keyframes jly{0%{transform:scale(1)}30%{transform:scale(1.06,.94)}55%{transform:scale(.97,1.03)}100%{transform:scale(1)}}
+ .stt.just{animation:tick .5s cubic-bezier(.3,1.6,.5,1)}@keyframes tick{from{transform:scale(.3);opacity:0}}
+ .bigring.hot{animation:hb 1s ease-in-out infinite}@keyframes hb{0%,100%{transform:scale(1)}15%{transform:scale(1.05)}30%{transform:scale(1)}}
+ .bigring.over{animation:shk .5s ease-in-out 2}
+ .pr.new{animation:pop .35s ease-out}
+ .slide.on>*{animation:sin .45s ease-out both}.slide.on>*:nth-child(2){animation-delay:.06s}.slide.on>*:nth-child(3){animation-delay:.12s}.slide.on>*:nth-child(4){animation-delay:.18s}.slide.on>*:nth-child(5){animation-delay:.24s}
+ @keyframes sin{from{opacity:0;transform:translateY(14px)}}
+ .pod{transform-origin:bottom;animation:rise .8s cubic-bezier(.3,1.3,.5,1) both}.pod:nth-child(1){animation-delay:.35s}.pod:nth-child(2){animation-delay:.1s}.pod:nth-child(3){animation-delay:.6s}
+ @keyframes rise{from{transform:scaleY(0)}}
+ .hero .wolfend{animation:lift 2.8s cubic-bezier(.3,.7,.3,1) both;transform-origin:50% 80%}
+ .tok[aria-pressed=true] i{animation:jly .5s ease-out}
+ .tile .badge{animation:bob 2s ease-in-out infinite}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+}
 #scrim{display:none}
 @media(max-width:959px){
  .stats{width:100%}.st{flex:1}
@@ -224,7 +277,7 @@ header{position:sticky;top:0;z-index:6;background:var(--bg);padding:8px 0;margin
 /* ================= DATA ================= */
 const COLS=[['#E59F48','#2A110D'],['#D95536','#FBF9F4'],['#523A85','#FBF9F4'],['#2A110D','#FBF9F4'],['#A892E0','#2A110D'],['#F07A5C','#2A110D']];
 const LINE=['#E59F48','#FF9E80','#FBF9F4','#FFD39A','#C9B8FF','#F07A5C','#E7DCCB','#FFC266'];
-const RISK={L:{n:'Easy',t:45,s:[1,-1]},H:{n:'Hard',t:60,s:[3,-2]}};
+const RISK={L:{n:'Easy',t:60,s:[1,-1]},H:{n:'Hard',t:90,s:[3,-2]}};
 const richest=a=>a.reduce((m,p)=>p.v>m.v?p:m,a[0]),poorest=a=>a.reduce((m,p)=>p.v<m.v?p:m,a[0]);
 /* Market News: imposed by the add-on. Each one changes the game. */
 const NEWS=[
@@ -284,7 +337,12 @@ let tLeft=45,tRun=false,tInt=null,ac=null;
 const actx=()=>{try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume()}catch(e){}return ac};
 const beep=(f,d)=>{const c=actx();if(!c)return;try{const o=c.createOscillator(),g=c.createGain();o.frequency.value=f;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.25,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.start();o.stop(c.currentTime+d)}catch(e){}};
 /* wolf howl, made with sound synthesis: a gliding tone with vibrato */
-function howl(){const c=actx();if(!c)return;try{
+/* the real wolf howl (sounds/howl.mp3); the synthesized one is only a backup */
+const HOWL=new Audio('./sounds/howl.mp3');HOWL.preload='auto';let howlReady=false;
+/* phones only allow sound after a tap: unlock the file on the first tap */
+document.addEventListener('pointerdown',()=>{if(howlReady)return;howlReady=true;HOWL.muted=true;HOWL.play().then(()=>{HOWL.pause();HOWL.currentTime=0;HOWL.muted=false}).catch(()=>{HOWL.muted=false})},{once:false,passive:true});
+function howl(){try{HOWL.pause();HOWL.currentTime=0;HOWL.muted=false;HOWL.volume=1;const p=HOWL.play();if(p&&p.catch)p.catch(()=>synthHowl())}catch(e){synthHowl()}}
+function synthHowl(){const c=actx();if(!c)return;try{
  const t=c.currentTime,out=c.createGain(),lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1800;lp.connect(out);out.connect(c.destination);
  out.gain.setValueAtTime(0.0001,t);out.gain.exponentialRampToValueAtTime(.35,t+.35);out.gain.setValueAtTime(.35,t+2.1);out.gain.exponentialRampToValueAtTime(.0001,t+3.2);
  const lfo=c.createOscillator(),lg=c.createGain();lfo.frequency.value=5.2;lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(14,t+1.2);lfo.connect(lg);
@@ -330,7 +388,7 @@ const SLIDES=[
  ['#E59F48','#2A110D','The goal','<p>Have the <b>most Soft Coins</b> at the end of the game.</p><p>You win coins by performing well yourself, and by betting well on the others.</p>'],
  ['#523A85','#FBF9F4','Setup','<p>Each player takes <b>10 Soft Coins</b>.</p><p>Shuffle the challenge cards and the <b>2 Joker cards</b> in one pile: the category is random.</p><p>The player who arrived earliest this morning starts. That\'s Punctuality!</p>'],
  ['#2A110D','#FBF9F4','A trading day','<ol><li><b>Opening Bell:</b> the Performer draws a card, reads it aloud and enters its risk in the app.</li><li><b>Trading:</b> pass the phone. Each investor bets BUY or SELL, 1 to 3 coins, in secret, or plays a Joker card.</li><li><b>Performance:</b> the investors start the clock.</li><li><b>Verdict:</b> the table debates, then votes Success or Fail.</li><li><b>Settlement:</b> check each result and confirm. Everyone\'s coins update at once.</li></ol>'],
- ['#523A85','#FBF9F4','Bets & results','<p><b>Good bet:</b> you get your stake back plus the same amount. Bet 2, win 2.</p><p><b>Bad bet:</b> you lose your stake.</p><p><b>Performer:</b> Easy card +1 / −1, Hard card +3 / −2.</p><p><b>Joker:</b> there are only 2 in the pile. If you draw one, keep it: you can use it to skip one bet.</p>'],
+ ['#523A85','#FBF9F4','Bets & results','<p><b>Good bet:</b> you get your stake back plus the same amount. Bet 2, win 2.</p><p><b>Bad bet:</b> you lose your stake.</p><p><b>Performer:</b> Easy card (60 s) +1 / −1, Hard card (90 s) +3 / −2. The app sets the timer for you.</p><p><b>Joker:</b> there are only 2 in the pile. If you draw one, keep it: you can use it to skip one bet.</p>'],
  ['#F07A5C','#2A110D','It\'s a tie!','<p>The Performer gets a <b>15-second final pitch</b> to convince the table. Then everyone votes again.</p><p>Still a tie? <b>The market freezes:</b> nobody wins or loses coins, all bets are paid back.</p>'],
  ['#D95536','#FBF9F4','Special cards','<p><b>Appeal</b> (once per game): contest a verdict with a 20-second plea, then the table votes again.</p><p><b>Bonus &amp; malus</b> like Short Clock, Safety Net or Double Up: tap them in the app when they are played.</p>'],
  ['#A892E0','#2A110D','Market News','<p>After each full round, <b>the wolf howls</b>: the app draws a market event at random. It is imposed on everyone and applied automatically.</p><p>The same event never comes twice in a row.</p>'],
@@ -348,7 +406,7 @@ function rulesScreen(){
  </section>`;
 }
 function goSlide(i,smooth){const c=$('car');if(!c)return;const N=c.children.length;S.slide=Math.max(0,Math.min(N-1,i));c.scrollTo({left:S.slide*c.clientWidth,behavior:smooth?'smooth':'auto'});syncDots()}
-function syncDots(){const c=$('car');if(!c)return;const N=c.children.length;[...$('dots').children].forEach((d,k)=>d.classList.toggle('on',k===S.slide));$('cprev').disabled=S.slide===0;$('cnext').style.visibility=S.slide===N-1?'hidden':'visible'}
+function syncDots(){const c=$('car');if(!c)return;const N=c.children.length;[...$('dots').children].forEach((d,k)=>d.classList.toggle('on',k===S.slide));[...c.children].forEach((s,k)=>s.classList.toggle('on',k===S.slide));$('cprev').disabled=S.slide===0;$('cnext').style.visibility=S.slide===N-1?'hidden':'visible'}
 
 /* ================= MARKET ================= */
 function spark(j){
@@ -379,7 +437,7 @@ function stage(still){
   full=`${top('ON STAGE',esc(p.name),'Draw a challenge card and read it aloud.',`<div class="coin blk"><b>${p.v}</b><small>coins</small></div>`)}
   <div class="cbody">${steps(0)}${flags()}
   <span class="lbl2">Risk written on the card</span>
-  <div class="seg" role="group" aria-label="Card risk"><button data-a="risk" data-r="L" aria-pressed="${S.risk==='L'}">Easy · 45 s<br><small>${sgn(RISK.L.s[0]*(S.golden?2:1))} / ${sgn(RISK.L.s[1]*(S.golden?2:1))}</small></button><button data-a="risk" data-r="H" aria-pressed="${S.risk==='H'}">Hard · 60 s<br><small>${sgn(RISK.H.s[0]*(S.golden?2:1))} / ${sgn(RISK.H.s[1]*(S.golden?2:1))}</small></button></div>
+  <div class="seg" role="group" aria-label="Card risk"><button data-a="risk" data-r="L" aria-pressed="${S.risk==='L'}">Easy · ${RISK.L.t} s<br><small>${sgn(RISK.L.s[0]*(S.golden?2:1))} / ${sgn(RISK.L.s[1]*(S.golden?2:1))}</small></button><button data-a="risk" data-r="H" aria-pressed="${S.risk==='H'}">Hard · ${RISK.H.t} s<br><small>${sgn(RISK.H.s[0]*(S.golden?2:1))} / ${sgn(RISK.H.s[1]*(S.golden?2:1))}</small></button></div>
   <span class="lbl2">Bonus &amp; malus cards played</span>
   <div class="mods" role="group" aria-label="Bonus and malus cards">${[['short','Short Clock'],['safety','Safety Net'],['dbl','Double Up']].map(([k,t])=>`<button class="mod" data-a="mod" data-k="${k}" aria-pressed="${S.mods[k]}">${t}</button>`).join('')}</div>
   <button class="big blk" style="background:var(--pu);color:var(--bg)" data-a="tobets">OPEN TRADING →</button></div>`;
@@ -409,7 +467,7 @@ function stage(still){
  else if(S.stage==='perf'||S.stage==='tie'){
   const tie=S.stage==='tie';cc=tie?'#F07A5C':p.c;ck=tie?'#2A110D':p.k;miniT=tie?'Final pitch':esc(p.name);miniS=tie?'15 seconds to convince':'Challenge running';miniR=tLeft>0?fmt(tLeft):'TIME!';
   full=`<div class="ctop" style="flex-direction:column;align-items:center;text-align:center;gap:14px;padding:26px 18px 22px"><div><span class="blk" style="font-size:12px;letter-spacing:.08em">${tie?'IT’S A TIE · FINAL PITCH':'PERFORMANCE · '+r.n.toUpperCase()+' CARD'}</span><div class="who blk">${esc(p.name)}</div><span class="sub">${tie?'Convince the table in 15 seconds!':'Investors, start the clock!'}</span></div>
-  <button class="bigring" data-a="tgo" aria-label="${tRun?'Pause':'Start'} the timer">${ringSvg(8)}<span class="blk" role="timer">${tLeft>0?fmt(tLeft):'TIME!'}<small>${tLeft<=0?'time is up':tRun?'tap to pause':'tap to start'}</small></span></button></div>
+  <button class="bigring ${tRun&&tLeft<=10&&tLeft>0?'hot':''} ${tLeft<=0?'over':''}" data-a="tgo" aria-label="${tRun?'Pause':'Start'} the timer">${ringSvg(8)}<span class="blk" role="timer">${tLeft>0?fmt(tLeft):'TIME!'}<small>${tLeft<=0?'time is up':tRun?'tap to pause':'tap to start'}</small></span></button></div>
   <div class="focus">${tie?'':steps(2)}<div class="fctl"><button style="background:var(--sand)" data-a="treset">↺ Reset</button><button class="blk" style="background:var(--dk);color:var(--bg);letter-spacing:.06em" data-a="tgo">${tRun?'PAUSE':tLeft>0&&tLeft<maxT()?'RESUME':'START'}</button><button style="background:var(--sand)" data-a="plus">+15 s</button></div>
   <button class="big blk" style="background:${tLeft<=0?'var(--red)':'var(--sand)'};color:${tLeft<=0?'var(--bg)':'var(--dk)'}" data-a="toverdict">${tie?'VOTE AGAIN →':'GO TO VERDICT →'}</button></div>`;
  }
@@ -443,7 +501,7 @@ function stage(still){
 function endScreen(){
  const rows=S.players.map(p=>({...p})).sort((a,b)=>b.v-a.v),pod=[rows[1],rows[0],rows[2]],H=[150,190,130];
  return `<section style="display:flex;flex-direction:column;gap:18px;max-width:900px;margin:0 auto;width:100%">
- <div class="hero"><svg width="80" height="124" aria-hidden="true"><use href="#wolf"/></svg><div><span class="hint">The Wolf of Work Street is</span><h1 class="blk" style="margin:0;font-size:clamp(30px,6vw,48px)">${esc(rows[0].name)}</h1></div></div>
+ <div class="hero"><svg class="wolfend" width="80" height="124" aria-hidden="true"><use href="#wolf"/></svg><div><span class="hint">The Wolf of Work Street is</span><h1 class="blk" style="margin:0;font-size:clamp(30px,6vw,48px)">${esc(rows[0].name)}</h1></div></div>
  <div class="podium">${pod.map((p,i)=>p?`<div class="pod" style="--c:${p.c};--k:${p.k};height:${H[i]}px"><span>${esc(p.name)}</span><b class="blk">${p.v}</b><small style="font-weight:700">${i===1?'1st':i===0?'2nd':'3rd'} · coins</small></div>`:'<div></div>').join('')}</div>
  <p class="hint">Check with the coins on the table. If something is different, trust the table and tell the group!</p>
  <div class="coins">${rows.map((p,i)=>`<div class="cn"><span style="width:14px;height:40px;border-radius:7px;background:${p.c};flex:none"></span><span class="nm">${i+1}. ${esc(p.name)}<small>${p.v} Soft Coins</small></span><b class="f blk">${p.v}</b></div>`).join('')}</div>
@@ -509,7 +567,7 @@ document.addEventListener('click',e=>{
  const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a,i=+b.dataset.i;
  if(a==='install'&&deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.finally(()=>{deferredPrompt=null;render()});return}
  /* setup */
- if(a==='add'){S.names.push('');render();const ins=document.querySelectorAll('#names input');ins[ins.length-1].focus();return}
+ if(a==='add'){S.names.push('');render();const ins=document.querySelectorAll('#names input');ins[ins.length-1].closest('.pr').classList.add('new');ins[ins.length-1].focus();return}
  if(a==='rm'){S.names.splice(i,1);render();return}
  if(a==='gm'){S.gameMin=Math.max(10,Math.min(120,S.gameMin+ +b.dataset.d));render();return}
  if(a==='start'){const names=S.names.map(n=>n.trim()).filter(Boolean);if(names.length<4){alertBox('You need at least 4 players.');return}S.phase='rules';S.slide=0;render();scrollTo(0,0);return}
@@ -536,7 +594,7 @@ document.addEventListener('click',e=>{
  if(a==='side'){S.tmp.side=b.dataset.s;if(!S.tmp.amt)S.tmp.amt=null;paintStage();return}
  if(a==='amt'){S.tmp.amt=+b.dataset.n;if(S.tmp.side==='J')S.tmp.side=null;paintStage();return}
  if(a==='joker'){S.tmp={side:'J',amt:0};paintStage();return}
- if(a==='place'){S.bets[S.betFor]=S.tmp.side==='J'?{side:'J',amt:0}:{side:S.tmp.side,amt:S.tmp.amt};S.betFor=null;S.tmp={};beep(700,.08);paintStage(true);return}
+ if(a==='place'){const who=S.betFor;S.bets[who]=S.tmp.side==='J'?{side:'J',amt:0}:{side:S.tmp.side,amt:S.tmp.amt};S.betFor=null;S.tmp={};beep(700,.08);setTimeout(()=>beep(1050,.08),90);paintStage(true);const st=document.querySelector(`.inv[data-i="${who}"] .stt`);st&&st.classList.add('just');return}
  if(a==='validate'){S.stage='perf';resetTimer();paintStage(true);return}
  /* clock */
  if(a==='tgo'){if(tRun){tRun=false;clearInterval(tInt)}else startTimer();paintStage();return}
@@ -545,23 +603,51 @@ document.addEventListener('click',e=>{
  if(a==='toverdict'){tRun=false;clearInterval(tInt);if(S.stage==='tie')S.tieDone=true;S.stage='verdict';S.verdict=null;S.on={};paintStage(true);return}
  if(a==='toperf'){S.stage=S.tieDone?'tie':'perf';paintStage(true);return}
  /* verdict */
- if(a==='verdict'){S.verdict=b.dataset.v;S.on={};S.stage='settle';beep(b.dataset.v==='S'?990:220,.2);paintStage(true);return}
+ if(a==='verdict'){S.verdict=b.dataset.v;S.on={};S.stage='settle';beep(b.dataset.v==='S'?990:220,.2);paintStage(true);const cd=document.querySelector('#stageCol .card');cd&&cd.classList.add(S.verdict==='F'?'shake':'jelly');return}
  if(a==='tie'){S.stage='tie';resetTimer();paintStage(true);return}
  if(a==='freeze'){S.verdict='Z';S.on={};S.stage='settle';beep(330,.3);paintStage(true);return}
  /* settlement */
  if(a==='toggle'){S.on[i]=S.on[i]===false;paintStage();return}
  if(a==='appeal'){S.verdict=S.verdict==='S'?'F':'S';paintStage();return}
- if(a==='confirm'){confirmResults();render();checkBroke();return}
+ if(a==='confirm'){confirmResults();render();fxTiles(S.prevV);const cd=document.querySelector('#stageCol .card');if(S.verdict==='S')chipRain();else if(S.verdict==='F'&&cd)cd.classList.add('shake');else if(cd)cd.classList.add('jelly');checkBroke();return}
  if(a==='undo'){if(S.prevV){S.players.forEach((p,k)=>{p.v=S.prevV[k]});S.jokersSpent=true;S.hist.pop();S.golden=S.wasGolden||false}S.stage='settle';render();return}
  if(a==='next'){S.turn++;S.cur=(S.cur+1)%S.players.length;const wrap=S.cur===0;newTurn();S.sheet=true;render();if(wrap)drawNews();return}
  /* modals & end */
- if(a==='newsok'||a==='alertok'){$('modal').innerHTML='';if(a==='newsok')checkBroke();return}
+ if(a==='newsok'||a==='alertok'){$('modal').innerHTML='';if(a==='newsok'){render();fxTiles(S.newsPrev);S.newsPrev=null;checkBroke()}return}
  if(a==='endask'){$('modal').innerHTML=`<div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="eq"><div class="card news pop" style="--cc:#2A110D;--ck:#FBF9F4"><div class="ctop"><span class="blk" style="font-size:12px;letter-spacing:.08em">END GAME</span><h3 class="blk" id="eq">End the game now?</h3></div><div class="cbody"><p>You will see the final ranking. You can still come back to the game.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="big blk" style="background:var(--sand)" data-a="alertok">NO</button><button class="big blk" style="background:var(--red);color:var(--bg)" data-a="end">YES</button></div></div></div></div>`;return}
- if(a==='end'){tRun=false;clearInterval(tInt);S.phase='end';$('modal').innerHTML='';render();letSleep();scrollTo(0,0);return}
+ if(a==='end'){tRun=false;clearInterval(tInt);S.phase='end';$('modal').innerHTML='';render();letSleep();scrollTo(0,0);setTimeout(()=>{chipRain(40);howl()},500);return}
  if(a==='back'){S.phase='play';render();keepAwake();return}
  if(a==='new'){S={...fresh(),names:S.players.map(p=>p.name),gameMin:S.gameMin};render();return}
 });
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset.n!==undefined){S.names[+t.dataset.n]=t.value;save()}});
+
+
+/* ================= ANIMATIONS ================= */
+const calm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+function fxLayer(){let l=document.querySelector('.fxlayer');if(!l){l=document.createElement('div');l.className='fxlayer';document.body.appendChild(l)}return l}
+/* poker chips falling in the team colours */
+function chipRain(n=26){if(calm())return;const l=fxLayer(),cols=['#E59F48','#D95536','#523A85','#A892E0','#F07A5C'];
+ for(let k=0;k<n;k++){const c=document.createElement('i');c.className='fxchip';c.style.left=rnd(100)+'vw';c.style.setProperty('--c',cols[rnd(cols.length)]);c.style.setProperty('--x',(rnd(160)-80)+'px');c.style.setProperty('--r',(rnd(720)-360)+'deg');c.style.setProperty('--d',(1.6+rnd(14)/10)+'s');c.style.animationDelay=(rnd(60)/100)+'s';l.appendChild(c);setTimeout(()=>c.remove(),4000)}}
+function floatAt(el,txt,cls){const r=el.getBoundingClientRect(),f=document.createElement('div');f.className='float '+cls;f.textContent=txt;f.style.left=(r.left+r.width/2)+'px';f.style.top=(r.top+r.height*0.35)+'px';f.style.position='fixed';fxLayer().appendChild(f);setTimeout(()=>f.remove(),1400)}
+/* tiles count from the old value to the new one, with a bump and a floating +n */
+function fxTiles(prev){if(!prev)return;S.players.forEach((p,i)=>{const t=document.querySelector(`.tile[data-i="${i}"]`);if(!t)return;const d=p.v-prev[i];if(!d)return;
+ const v=t.querySelector('.v');t.classList.add(d>0?'bump-up':'bump-down');floatAt(t,(d>0?'+':'−')+Math.abs(d),d>0?'pos':'neg');
+ if(v&&!calm()){const a=prev[i],b=p.v,t0=performance.now();const step=now=>{const k=Math.min(1,(now-t0)/700);v.textContent=Math.round(a+(b-a)*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(step)};v.textContent=a;requestAnimationFrame(step)}})}
+/* the wolf howls before each Market News */
+const MOONSTARS=[[38,60],[262,48],[60,210],[250,200],[150,22],[24,140],[278,128]];
+function howlScene(done){
+ const el=document.createElement('div');el.className='howl';el.setAttribute('role','img');el.setAttribute('aria-label','The wolf howls: market news!');
+ el.innerHTML=`<svg class="scene" viewBox="0 0 300 300" aria-hidden="true">
+ ${MOONSTARS.map(([x,y])=>`<circle class="star" cx="${x}" cy="${y}" r="2.5" fill="#FBF9F4"/>`).join('')}
+ <g class="moon"><circle cx="150" cy="150" r="118" fill="#D95536"/><g class="ring"><circle cx="150" cy="150" r="104" fill="none" stroke="#2A110D" stroke-width="22" stroke-dasharray="26 55"/></g><circle cx="150" cy="150" r="88" fill="#E59F48" stroke="#D95536" stroke-width="4"/></g>
+ <g fill="none" stroke-linecap="round" stroke-width="9"><path class="wave" d="M104 96 Q150 58 196 96" stroke="#FBF9F4"/><path class="wave w2" d="M104 96 Q150 58 196 96" stroke="#FBF9F4"/><path class="wave w3" d="M104 96 Q150 58 196 96" stroke="#FBF9F4"/></g>
+ <g class="wolfg"><use href="#wolf" x="82" y="96" width="136" height="212"/></g></svg>
+ <div class="aw" aria-hidden="true">${'AWOOOO!'.split('').map((c,i)=>`<span style="--i:${i}">${c}</span>`).join('')}</div>
+ <div class="lab">MARKET NEWS</div><div class="skiph">Tap to skip</div>`;
+ document.body.appendChild(el);howl();
+ let fin=false;const end=()=>{if(fin)return;fin=true;el.classList.add('out');setTimeout(()=>{el.remove();done()},calm()?0:330)};
+ el.addEventListener('click',end);setTimeout(end,calm()?1400:3600);
+}
 
 /* ================= MARKET NEWS ================= */
 function drawNews(){
@@ -569,9 +655,9 @@ function drawNews(){
  let k;do{k=rnd(NEWS.length)}while(k===S.lastNews&&NEWS.length>1);S.lastNews=k;
  const N=NEWS[k];S.wasGolden=false;const eff=N.f(S.players);S.players.forEach(p=>p.v=Math.max(0,p.v));snap('news');
  const c=NC[k%4];
- $('modal').innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-labelledby="nt"><div class="card news pop" style="--cc:${c};--ck:${c==='#E59F48'?'#2A110D':'#FBF9F4'}"><div class="ctop"><span class="blk" style="font-size:12px;letter-spacing:.08em">MARKET NEWS · END OF ROUND ${round()-1}</span><h3 class="blk" id="nt">${N.t}</h3></div><div class="cbody"><p>${N.d}</p><div class="eff">${esc(eff)}</div><p class="hint">Imposed by the market: apply it on the table too.</p><button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="newsok">BACK TO TRADING</button></div></div></div>`;
- render();howl();
- const btn=document.querySelector('[data-a=newsok]');btn&&btn.focus();
+ const html=`<div class="modal" role="dialog" aria-modal="true" aria-labelledby="nt"><div class="card news pop" style="--cc:${c};--ck:${c==='#E59F48'?'#2A110D':'#FBF9F4'}"><div class="ctop"><span class="blk" style="font-size:12px;letter-spacing:.08em">MARKET NEWS · END OF ROUND ${round()-1}</span><h3 class="blk" id="nt">${N.t}</h3></div><div class="cbody"><p>${N.d}</p><div class="eff">${esc(eff)}</div><p class="hint">Imposed by the market: apply it on the table too.</p><button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="newsok">BACK TO TRADING</button></div></div></div>`;
+ render();S.newsPrev=S.hist[S.hist.length-2].v;
+ howlScene(()=>{$('modal').innerHTML=html;const btn=document.querySelector('[data-a=newsok]');btn&&btn.focus()});
 }
 function alertBox(msg){$('modal').innerHTML=`<div class="modal" role="alertdialog" aria-modal="true"><div class="card news pop" style="--cc:#D95536;--ck:#FBF9F4"><div class="ctop"><h3 class="blk">Wait!</h3></div><div class="cbody"><p>${esc(msg)}</p><button class="big blk" style="background:var(--dk);color:var(--bg)" data-a="alertok">OK</button></div></div></div>`}
 

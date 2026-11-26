@@ -1,11 +1,12 @@
 // Service worker: keeps the app working offline.
 // When you change a file, change the version number below (v1 -> v2...)
 // so that phones download the new version.
-const CACHE = 'wows-v6';
+const CACHE = 'wows-v8';
 const FILES = [
   './',
   './index.html',
   './manifest.json',
+  './sounds/howl.mp3',
   './fonts/archivo-black-latin-400-normal.woff2',
   './fonts/familjen-grotesk-latin-700-normal.woff2',
   './fonts/familjen-grotesk-latin-400-italic.woff2',
