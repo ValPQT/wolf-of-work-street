@@ -237,7 +237,8 @@ html{-webkit-tap-highlight-color:transparent}
 :root{--hs:0 5px 0 var(--dk);--soft:0 16px 30px -14px rgba(42,17,13,.45)}
 body{background-color:var(--bg);background-image:radial-gradient(rgba(42,17,13,.07) 1.3px,transparent 1.5px);background-size:22px 22px}
 header{background:transparent}
-header::before{content:"";position:absolute;inset:0 -100vw;background:rgba(251,249,244,.92);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:-1}
+header{background:rgba(251,249,244,.94);box-shadow:0 0 0 100vmax rgba(251,249,244,.94);clip-path:inset(0 -100vmax)}
+html{overflow-x:hidden}
 /* pressable 3D buttons */
 .big,.vb,.bb,.go,.navb,.addp,.endi,.gear,.jkb,.stk .sm,.fctl button,.inv,.seg button,.mod,.sm,.tg,.inst button,.undo,.x{border:3px solid var(--dk);box-shadow:var(--hs);transition:transform .1s,box-shadow .1s,background-color .2s}
 .big:not([disabled]):active,.vb:active,.bb:active,.go:active,.navb:not([disabled]):active,.addp:active,.endi:active,.gear:active,.jkb:active,.stk .sm:not([disabled]):active,.fctl button:active,.inv:not([disabled]):active,.seg button:active,.mod:active,.sm:active,.tg:not([disabled]):active,.undo:active,.x:active{transform:translateY(4px);box-shadow:0 1px 0 var(--dk)}
@@ -327,6 +328,7 @@ input[type=range][disabled]{opacity:.4}
  .tile .rank.gold{animation:bob 2.2s ease-in-out infinite}
 }
 @media(max-width:520px){.hs{display:none}.st small{font-size:10px}.st b{font-size:17px}.st b span{font-size:11px!important}.stats{gap:5px}.st{padding:5px 8px}.endi,.gear{width:44px;min-height:46px}}
+@media(max-width:959px){header{z-index:10}#stageCol{max-height:calc(100vh - 100px);max-height:calc(100dvh - 100px)}}
 </style>
 </head>
 <body>
